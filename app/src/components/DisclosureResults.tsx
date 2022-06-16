@@ -25,7 +25,7 @@ const DisclosureResults = ({ data, config }: Props) => {
   useEffect(() => {
     if (data === null) return;
     setRisk(disRisk(data.data.length / 5000, matches.uniques, matches.pairs));
-  }, [matches, setRisk]);
+  }, [data, matches, setRisk]);
 
   if (data === null || config.vars.length === 0) return <></>;
 
