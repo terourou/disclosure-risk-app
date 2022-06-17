@@ -76,9 +76,9 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
               MenuProps={MenuProps}
             >
               {data.vars
-                .filter(
-                  (x, i) => x.field !== "id" && data.types[i - 1] === "string"
-                )
+                // .filter(
+                //   (x, i) => x.field !== "id" && data.types[i - 1] === "string"
+                // )
                 .map((x) => (
                   <MenuItem key={x.field} value={x.field}>
                     {x.headerName}
