@@ -1,15 +1,28 @@
 import { Box, Container } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MenuBar } from "./components/header/MenuBar";
 import LoadData from "./components/data/LoadData";
 import ViewData from "./components/data/ViewData";
 import { Data } from "./types/data";
 import DisclosureOptions from "./components/DisclosureOptions";
 import DisclosureResults from "./components/DisclosureResults";
+import { useRserve } from "@tmelliott/react-rserve";
 
 function App() {
-  const [data, setData] = useState<Data | null>(null);
+  const [data, setData] = useState(null);
   const [config, setConfig] = useState({ vars: [] });
+
+  const R = useRserve();
+  const [v, setV] = useState("");
+
+  useEffect(() => {
+    if (!R || !R.running) return;
+    R.ocap((err, funs) => {
+      funs.rversion((err, value) => setV(value));
+    });
+  }, [R, setV]);
+
+  console.log(v)
 
   return (
     <div className="App">

@@ -1932,6 +1932,13 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
+"@tmelliott/react-rserve@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@tmelliott/react-rserve/-/react-rserve-0.0.10.tgz#d62baf41c784079c5ca594381218a6e469c14ff4"
+  integrity sha512-2D5PtqrLMOPtWoCEt7oQ6wmGIIuJ98zEJaI/bV5fOYgpZYqZQvhCe/Rvw7GRTCVomNaXU39zAjHJHIjtVocc7A==
+  dependencies:
+    underscore "^1.13.4"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -8654,6 +8661,11 @@ unbox-primitive@^1.0.2:
     has-bigints "^1.0.2"
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
+
+underscore@^1.13.4:
+  version "1.13.4"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.4.tgz#7886b46bbdf07f768e0052f1828e1dcab40c0dee"
+  integrity sha512-BQFnUDuAQ4Yf/cYY5LNrK9NCJFKriaRbD9uR1fTeXnBeoa97W0i41qkZfGO9pSo8I5KzjAcSY2XYtdf0oKd7KQ==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
