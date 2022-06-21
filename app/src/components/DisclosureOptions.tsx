@@ -8,6 +8,7 @@ import {
   OutlinedInput,
   Select,
   SelectChangeEvent,
+  TextField,
   Typography,
 } from "@mui/material";
 import { Data } from "../types/data";
@@ -43,6 +44,8 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
     });
     // handler({ ...config, vars: vars });
   };
+
+
 
   return (
     <>
@@ -85,6 +88,14 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
                   </MenuItem>
                 ))}
             </Select>
+          </FormControl>
+        </Grid>
+        <Grid item md={6} lg={4}>
+          <FormControl sx={{m:1, width:300}}>
+            <InputLabel id="set-sampling-fraction-label">
+              Sampling fraction / population size
+            </InputLabel>
+            <TextField variant="outlined" />
           </FormControl>
         </Grid>
       </Grid>
