@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { MenuBar } from "./components/header/MenuBar";
 import LoadData from "./components/data/LoadData";
 import ViewData from "./components/data/ViewData";
-import { Data } from "./types/data";
 import DisclosureOptions from "./components/DisclosureOptions";
 import DisclosureResults from "./components/DisclosureResults";
 import { useRserve } from "@tmelliott/react-rserve";

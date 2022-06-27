@@ -31,7 +31,7 @@ const DisclosureResults = ({ data, config }: Props) => {
         100 * disRisk(config.sfrac, matches.uniques, matches.pairs) * 10
       ) / 10
     );
-  }, [data, matches, setRisk]);
+  }, [data, matches, setRisk, config]);
 
   if (data === null || config.vars.length === 0) return <></>;
 
