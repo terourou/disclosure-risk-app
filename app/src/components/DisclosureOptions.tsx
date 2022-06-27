@@ -31,8 +31,6 @@ const MenuProps = {
 };
 
 const DisclosureOptions = ({ data, config, handler }: Props) => {
-  if (data === null) return <></>;
-
   const handleVarChange = (event: SelectChangeEvent<string>) => {
     const {
       target: { value },
@@ -42,10 +40,23 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
       ...config,
       vars: typeof value === "string" ? value.split(",") : value,
     });
-    // handler({ ...config, vars: vars });
   };
 
+  const handleFracChange = (event: any) => {
+    let {
+      target: { value },
+    } = event;
 
+    if (!data) value = 1;
+    else if (value > 1) value = data.data.length / value;
+
+    handler({
+      ...config,
+      sfrac: value,
+    });
+  };
+
+  if (data === null) return <></>;
 
   return (
     <>
@@ -79,9 +90,9 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
               MenuProps={MenuProps}
             >
               {data.vars
-                // .filter(
-                //   (x, i) => x.field !== "id" && data.types[i - 1] === "string"
-                // )
+                .filter(
+                  (x, i) => x.field !== "id" && data.types[i - 1] === "string"
+                )
                 .map((x) => (
                   <MenuItem key={x.field} value={x.field}>
                     {x.headerName}
@@ -91,11 +102,14 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
           </FormControl>
         </Grid>
         <Grid item md={6} lg={4}>
-          <FormControl sx={{m:1, width:300}}>
-            <InputLabel id="set-sampling-fraction-label">
-              Sampling fraction / population size
-            </InputLabel>
-            <TextField variant="outlined" />
+          <FormControl sx={{ m: 1, width: 300 }}>
+            <TextField
+              variant="outlined"
+              label="Sampling fraction / population size"
+              id="set-sampling-fraction"
+              defaultValue={1}
+              onChange={handleFracChange}
+            />
           </FormControl>
         </Grid>
       </Grid>
