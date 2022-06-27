@@ -7,6 +7,14 @@ type Props = {
   setter: any;
 };
 
+function distinct(value: any, index: number, self: any) {
+  return self.indexOf(value) === index;
+}
+
+function encrypt(value: any, values: any) {
+  return "X" + values.indexOf(value);
+}
+
 const LoadData = ({ setter }: Props) => {
   const [file, setFile] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,7 +57,39 @@ const LoadData = ({ setter }: Props) => {
               : "string";
           });
 
-        setter({ vars: keys, data: d, types: types });
+        // encrypt data
+        const encArray = keys.map((v, i) => ({
+          original: v.field,
+          encrypted: i === 0 ? v.field : "v" + i,
+          values: d
+            .map((x) => x[v.field])
+            .filter(distinct)
+            .map((x) => x.toString()),
+        }));
+
+        const encdata = {
+          vars: encArray.map((v) => ({
+            field: v.encrypted,
+            headerName: v.encrypted,
+            type: v.original === "id" ? "number" : "string",
+            editable: false,
+            hide: v.original === "id",
+          })),
+          data: d.map((r) => {
+            let rd: any = {};
+            encArray.map((x) => {
+              rd[x.encrypted] =
+                x.original === "id"
+                  ? r[x.original]
+                  : encrypt(r[x.original], x.values);
+              return 0;
+            });
+            return rd;
+          }),
+          types: types.map((v, i) => (i === 0 ? v : "string")),
+        };
+
+        setter({ vars: keys, data: d, types: types, encrypted: encdata });
         setLoading(false);
       },
       header: true,

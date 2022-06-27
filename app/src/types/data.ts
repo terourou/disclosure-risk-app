@@ -6,4 +6,5 @@ export type Data = {
   vars: GridColDef[];
   data: Row[];
   types: string[];
+  encrypted?: Data;
 };
