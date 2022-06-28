@@ -96,6 +96,7 @@ const DisclosureResults = ({ data, config }: Props) => {
   const R = useRserve();
 
   const uploadData = () => {
+    console.log(R);
     if (!R || !R.running) return;
     R.ocap((err: any, funs: any) => {
       if (!data || !data.encrypted || !funs.upload_data) return;

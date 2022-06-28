@@ -16,7 +16,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <>
     <CssBaseline />
-    <Rserve host="ws://localhost:8111">
+    <Rserve
+      {...{ host: process.env.REACT_APP_R_HOST || "ws://localhost:8111" }}
+    >
       <App />
     </Rserve>
   </>
