@@ -36,9 +36,17 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
       target: { value },
     } = event;
 
+    const newvars = typeof value === "string" ? value.split(",") : value;
+
+    // figure out encrypted vars:
+    const encvars = newvars
+      .map((x) => data?.vars.map((x) => x.field).indexOf(x))
+      .map((i) => data?.encrypted?.vars[i || 0].field || i);
+
     handler({
       ...config,
-      vars: typeof value === "string" ? value.split(",") : value,
+      vars: newvars,
+      encvars,
     });
   };
 

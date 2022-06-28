@@ -7685,6 +7685,14 @@ react-app-polyfill@^3.0.0:
     regenerator-runtime "^0.13.9"
     whatwg-fetch "^3.6.2"
 
+react-boxplot@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-boxplot/-/react-boxplot-4.0.0.tgz#0b52d7c19cd98965c365338e1f44871c8e6386e6"
+  integrity sha512-au8Tj+xh/cEx5sv9DHMQt5q7o6z8YegWTGAckrxQuR0ZMhFDW1dNQrcfE2sMBB4mCCpHhCYr2Pvtr8ha0vUORA==
+  dependencies:
+    "@babel/runtime" "^7.17.2"
+    simple-statistics "^7.0.0"
+
 react-dev-utils@^12.0.1:
   version "12.0.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-12.0.1.tgz#ba92edb4a1f379bd46ccd6bcd4e7bc398df33e73"
@@ -8313,6 +8321,11 @@ signal-exit@^3.0.2, signal-exit@^3.0.3:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
+
+simple-statistics@^7.0.0:
+  version "7.7.5"
+  resolved "https://registry.yarnpkg.com/simple-statistics/-/simple-statistics-7.7.5.tgz#b34ad7dc18f4dea7bce2cbd376c467147062e839"
+  integrity sha512-CYq683Yg2mb7M4mklQ6FtxEdsYeziGa2giaLvqXobfK1qVqZDKd7BIqLnngnKQSw9GsfNinbiScbfjc3IRWdQA==
 
 sisteransi@^1.0.5:
   version "1.0.5"

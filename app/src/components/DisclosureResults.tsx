@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
@@ -13,6 +14,9 @@ import { Data } from "../types/data";
 import { calculate_matches, disRisk } from "../lib/disRisk";
 
 import GaugeChart from "react-gauge-chart";
+
+import { useRserve } from "@tmelliott/react-rserve";
+import DisRiskR from "./DisRiskR/DisRiskR";
 
 type Props = {
   data: Data | null;
@@ -86,6 +90,23 @@ const DisclosureResults = ({ data, config }: Props) => {
     );
   }, [data, matches, setRisk, config]);
 
+  const [loadingR, setLoadingR] = useState(false);
+  const [Rfuns, setRfuns] = useState<any>({});
+
+  const R = useRserve();
+
+  const uploadData = () => {
+    if (!R || !R.running) return;
+    R.ocap((err: any, funs: any) => {
+      if (!data || !data.encrypted || !funs.upload_data) return;
+      setLoadingR(true);
+      funs.upload_data(data.encrypted.data, (err: any, value: any) => {
+        setRfuns({ calculate_risks: value.calculate_risks });
+        setLoadingR(false);
+      });
+    });
+  };
+
   if (data === null || config.vars.length === 0) return <></>;
 
   return (
@@ -121,19 +142,35 @@ const DisclosureResults = ({ data, config }: Props) => {
         </Grid>
 
         <Grid item md={6} lg={4}>
-          <p>
-            For additional information, you can upload an encrypted version of
-            your data to our server.
-          </p>
-          <Stack spacing={2} direction="row">
-            <Button variant="contained">Upload to server</Button>
-            <Button variant="outlined" onClick={() => setInfoOpen(true)}>
-              Find out more
-            </Button>
-          </Stack>
-          <InfoDialog open={infoOpen} onClose={() => setInfoOpen(false)} />
+          {R &&
+            R.running &&
+            !Rfuns.calculate_risks &&
+            (loadingR ? (
+              <CircularProgress />
+            ) : (
+              <>
+                <p>
+                  For additional information, you can upload an encrypted
+                  version of your data to our server.
+                </p>
+                <Stack spacing={2} direction="row">
+                  <Button variant="contained" onClick={uploadData}>
+                    Upload to server
+                  </Button>
+                  <Button variant="outlined" onClick={() => setInfoOpen(true)}>
+                    Find out more
+                  </Button>
+                </Stack>
+                <InfoDialog
+                  open={infoOpen}
+                  onClose={() => setInfoOpen(false)}
+                />
+              </>
+            ))}
         </Grid>
       </Grid>
+
+      <DisRiskR funs={Rfuns} config={config} data={data} />
     </>
   );
 };

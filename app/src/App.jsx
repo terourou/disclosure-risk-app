@@ -5,21 +5,10 @@ import LoadData from "./components/data/LoadData";
 import ViewData from "./components/data/ViewData";
 import DisclosureOptions from "./components/DisclosureOptions";
 import DisclosureResults from "./components/DisclosureResults";
-// import { useRserve } from "@tmelliott/react-rserve";
 
 function App() {
   const [data, setData] = useState(null);
   const [config, setConfig] = useState({ vars: [] });
-
-  // const R = useRserve();
-  // const [v, setV] = useState("");
-
-  // useEffect(() => {
-  //   if (!R || !R.running) return;
-  //   R.ocap((err, funs) => {
-  //     funs.rversion((err, value) => setV(value));
-  //   });
-  // }, [R, setV]);
 
   return (
     <div className="App">
