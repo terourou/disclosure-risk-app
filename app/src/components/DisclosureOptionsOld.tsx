@@ -2,12 +2,14 @@ import {
   Box,
   Chip,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
   SelectChangeEvent,
   TextField,
+  Typography,
 } from "@mui/material";
 import { Data } from "../types/data";
 
@@ -28,7 +30,7 @@ const MenuProps = {
   },
 };
 
-const DisclosureOptions = ({ data, config, handler }: Props) => {
+const DisclosureOptionsOld = ({ data, config, handler }: Props) => {
   const handleVarChange = (event: SelectChangeEvent<string>) => {
     const {
       target: { value },
@@ -65,12 +67,11 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
   if (data === null) return <></>;
 
   return (
-    <div className="flex flex-col gap-4">
-      <h3 className="text-xl">Configuration options</h3>
+    <>
+      <Typography variant="h5">Configuration</Typography>
 
-      {/* TODO: replace MUI components with tailwind CSS ones */}
-      <div className="flex gap-2 flex-wrap">
-        <div>
+      <Grid container spacing={2} sx={{ marginTop: "0.5em" }}>
+        <Grid item md={6} lg={4}>
           <FormControl sx={{ m: 1, width: 300 }}>
             <InputLabel id="select-variables-label">
               Choose variables
@@ -107,21 +108,21 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
                 ))}
             </Select>
           </FormControl>
-        </div>
-        <div>
+        </Grid>
+        <Grid item md={6} lg={4}>
           <FormControl sx={{ m: 1, width: 300 }}>
             <TextField
               variant="outlined"
-              label="Population size (or sampling fraction)"
+              label="Sampling fraction / population size"
               id="set-sampling-fraction"
-              defaultValue={data ? data.data.length : 1}
+              defaultValue={1}
               onChange={handleFracChange}
             />
           </FormControl>
-        </div>
-      </div>
-    </div>
+        </Grid>
+      </Grid>
+    </>
   );
 };
 
-export default DisclosureOptions;
+export default DisclosureOptionsOld;

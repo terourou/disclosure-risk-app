@@ -1,9 +1,13 @@
 import {
+  Button,
   CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid,
+  Stack,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Data } from "../types/data";
@@ -13,14 +17,13 @@ import GaugeChart from "react-gauge-chart";
 
 import { useRserve } from "@tmelliott/react-rserve";
 import DisRiskR from "./DisRiskR/DisRiskR";
-import Stat from "./widgets/Stat";
 
 type Props = {
   data: Data | null;
   config: any;
 };
 
-interface InfoDialogProps {
+export interface InfoDialogProps {
   open: boolean;
   onClose: () => void;
 }
@@ -62,7 +65,7 @@ function InfoDialog(props: InfoDialogProps) {
   );
 }
 
-const DisclosureResults = ({ data, config }: Props) => {
+const DisclosureResultsOld = ({ data, config }: Props) => {
   const [matches, setMatches] = useState({ uniques: 0, pairs: 0 });
   const [risk, setRisk] = useState(0);
 
@@ -105,49 +108,18 @@ const DisclosureResults = ({ data, config }: Props) => {
     });
   };
 
-  if (data === null || config.vars.length === 0)
-    return (
-      <div className="text-center">
-        Results will appear here once you select one or more variables from the
-        list.
-      </div>
-    );
+  if (data === null || config.vars.length === 0) return <></>;
 
   return (
-    <div className="flex flex-col gap-4 ">
-      <div className="flex items-center justify-center">
-        <div className="flex flex-row gap-10 items-stretch">
-          <div className="flex flex-col gap-5 items-center justify-center">
-            <Stat value={data.data.length} name="observations" />
-            <Stat
-              value={Math.round(data.data.length / (config.sfrac || 1))}
-              name="total population"
-            />
-          </div>
-          <div className="flex flex-col gap-5 items-center justify-center">
-            <Stat value={config.sfrac || 1} name="sampling fraction" unit="%" />
-          </div>
-          <div className="flex flex-col gap-5 items-center justify-center border-l pl-20 px-10">
-            <Stat value={config.vars.length} name="variables" />
-            <Stat value={matches.uniques} name="unique combinations" />
-            <Stat value={matches.pairs} name="pairs" />
-          </div>
+    <>
+      <Typography variant="h5">Results</Typography>
 
-          <div className="flex flex-col gap-4 items-center justify-center border-l pl-20 w-[360px]">
-            <p>Estimated disclosure risk:</p>
-            <GaugeChart
-              id="gauge-chart4"
-              nrOfLevels={10}
-              arcPadding={0.1}
-              cornerRadius={3}
-              percent={risk / 100}
-              textColor="black"
-              animate={false}
-            />
-          </div>
-        </div>
-
-        {/* <Grid item md={6} lg={4}>
+      <Grid
+        container
+        columnSpacing={10}
+        sx={{ marginTop: "0.5em", display: "flex" }}
+      >
+        <Grid item md={6} lg={4}>
           <Stack spacing={0}>
             <div>Number of observations: {data.data.length}</div>
             <div>Sampling fraction: {config.sfrac || 1}</div>
@@ -159,12 +131,18 @@ const DisclosureResults = ({ data, config }: Props) => {
         </Grid>
 
         <Grid item md={6} lg={4}>
+          <GaugeChart
+            id="gauge-chart4"
+            nrOfLevels={10}
+            arcPadding={0.1}
+            cornerRadius={3}
+            percent={risk / 100}
+            textColor="black"
+            animate={false}
+          />
+        </Grid>
 
-        </Grid> */}
-      </div>
-
-      <div className="flex-1">
-        <div className="flex min-h-[200px] items-center flex-col flex-1 justify-center gap-8">
+        <Grid item md={6} lg={4}>
           {R &&
             R.running &&
             !Rfuns.calculate_risks &&
@@ -172,33 +150,30 @@ const DisclosureResults = ({ data, config }: Props) => {
               <CircularProgress />
             ) : (
               <>
-                <p className="text-slate-700">
-                  For additional information, you can upload an unlabelled
+                <p>
+                  For additional information, you can upload an encrypted
                   version of your data to our server.
                 </p>
-                <div className="flex justify-center items-center gap-2">
-                  <button
-                    type="button"
-                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                    onClick={uploadData}
-                  >
+                <Stack spacing={2} direction="row">
+                  <Button variant="contained" onClick={uploadData}>
                     Upload to server
-                  </button>
-                  <button
-                    type="button"
-                    className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                  >
-                    Details about uploading data
-                  </button>
-                </div>
+                  </Button>
+                  <Button variant="outlined" onClick={() => setInfoOpen(true)}>
+                    Find out more
+                  </Button>
+                </Stack>
+                <InfoDialog
+                  open={infoOpen}
+                  onClose={() => setInfoOpen(false)}
+                />
               </>
             ))}
-        </div>
+        </Grid>
+      </Grid>
 
-        <DisRiskR funs={Rfuns} config={config} data={data} />
-      </div>
-    </div>
+      <DisRiskR funs={Rfuns} config={config} data={data} />
+    </>
   );
 };
 
-export default DisclosureResults;
+export default DisclosureResultsOld;
