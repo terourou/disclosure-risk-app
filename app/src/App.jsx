@@ -9,29 +9,19 @@ import ViewData from "./components/data/ViewData";
 import DisclosureOptions from "./components/DisclosureOptions";
 import DisclosureResults from "./components/DisclosureResults";
 
-// --- modules to remove
-import { MenuBar } from "./components/header/MenuBar";
-import { Box, Container } from "@mui/material";
-import ViewDataOld from "./components/data/ViewDataOld";
-import LoadDataOld from "./components/data/LoadDataOld";
-import DisclosureOptionsOld from "./components/DisclosureOptionsOld";
-import DisclosureResultsOld from "./components/DisclosureResultsOld";
-// ---
-
-
 function App() {
   const [data, setData] = useState(null);
   const [config, setConfig] = useState({ vars: [] });
 
   return (
     // a side-by-side for development
-    <div className="App flex bg-black gap-1 min-h-screen">
-      <div className="flex-1 bg-white flex flex-col"> {/* remove this div once finished */}
+    <div className="App flex flex-col bg-black gap-1 min-h-screen justify-center">
 
-        <Header />
+      <Header />
 
-        <div className="main flex-1 flex flex-col gap-10 bg-gradient-to-br from-gray-50 to-green-50 p-4">
+      <div className="main flex-1 flex flex-col 2xl:flex-row items-stretch gap-10 bg-gradient-to-br from-gray-50 to-green-50 p-4">
 
+        <div className="flex flex-col gap-10 2xl:w-[40%]">
           <div className="container h-[360px] drop-shadow">
             {data ? <ViewData data={data} /> : <LoadData setter={setData} />}
           </div>
@@ -41,53 +31,19 @@ function App() {
               <DisclosureOptions data={data} config={config} handler={setConfig} />
             </div>
           )}
-
-          {data && (
-            <div className="container flex-1 flex items-center justify-center p-5 drop-shadow">
-              <DisclosureResults data={data} config={config} />
-            </div>
-          )}
-
         </div>
 
-        <Footer />
+        {data && (
+          <div className="container flex-1 flex justify-center p-5">
+            <DisclosureResults data={data} config={config} />
+          </div>
+        )}
 
       </div>
 
-      <div className="flex-1 bg-white">
-        <MenuBar />
+      <Footer />
 
-        <Container maxWidth="lg">
-          {/* load data */}
-          <Box
-            sx={{
-              marginTop: "2em",
-              height: "360px",
-            }}
-          >
-            {data ? <ViewDataOld data={data} /> : <LoadDataOld setter={setData} />}
-          </Box>
-
-          {/* select options */}
-          <Box
-            sx={{
-              marginTop: "2em",
-            }}
-          >
-            <DisclosureOptionsOld data={data} config={config} handler={setConfig} />
-          </Box>
-
-          {/* view results */}
-          <Box
-            sx={{
-              marginTop: "2em",
-            }}
-          >
-            <DisclosureResultsOld data={data} config={config} />
-          </Box>
-        </Container>
-      </div>
-    </div>
+    </div >
   );
 }
 

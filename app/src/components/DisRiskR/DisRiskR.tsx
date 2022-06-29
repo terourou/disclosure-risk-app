@@ -1,9 +1,11 @@
-import { CircularProgress, Grid, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import Boxplot, { computeBoxplotStats } from "react-boxplot";
 import { Data } from "../../types/data";
+
+import { interpolateHsl } from "d3";
 
 type Props = {
   funs: any;
@@ -60,31 +62,36 @@ export default function DisRiskR({ funs, config, data }: Props) {
     setLoading(false);
   }, [res, config, data]);
 
-  console.log(rData);
+  const barCol = interpolateHsl("#00FF00", "#FF0000");
 
   if (!res) return <></>;
 
   return (
-    <Box
-      sx={{
-        marginTop: 1,
-        paddingTop: 1,
-        borderTop: "solid 1px #f0f0f0",
-      }}
-    >
-      <Typography variant="h6">
-        Extended results from R package 'sdcMicro'
-      </Typography>
-
+    <div className="flex justify-center items-center border-t pt-2">
       {loading ? (
-        <CircularProgress />
+        <div className="h-[200px] flex items-center justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-10 w-10 animate-sink"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+            />
+          </svg>
+        </div>
       ) : (
-        <Grid container spacing={2}>
+        <div className="flex gap-2 w-full items-start justify-center">
           {res.var_contrib && (
-            <Grid item lg={4}>
-              <Typography variant="subtitle1">
-                Variable contributions
-              </Typography>
+            <div className="bg-slate-800 rounded-lg text-white p-4 m-4 min-w-[360px] flex flex-col gap-4">
+              <h5 className="text-lg font-bold">
+                Variable contributions to overall risk
+              </h5>
 
               <table>
                 <tbody>
@@ -92,13 +99,15 @@ export default function DisRiskR({ funs, config, data }: Props) {
                     .sort((x1: any, x2: any) => (x1.c < x2.c ? 1 : -1))
                     .map(({ v, c }: any) => (
                       <tr key={v}>
-                        <td>{v}</td>
-                        <td width="99%" height="18px">
+                        <td className="text-right border-r border-r-white pr-2">
+                          {v}
+                        </td>
+                        <td width="100%" height="18px">
                           <div
+                            className="h-full"
                             style={{
                               width: c + "%",
-                              height: "100%",
-                              background: "#e68d8d",
+                              background: barCol(c / 100),
                             }}
                           ></div>
                         </td>
@@ -111,21 +120,14 @@ export default function DisRiskR({ funs, config, data }: Props) {
                     ))}
                 </tbody>
               </table>
-            </Grid>
+            </div>
           )}
 
           {res.indiv_risk && (
-            <Grid item lg={8}>
-              <Typography variant="subtitle1">Individual risks</Typography>
+            <div className="bg-green-100 rounded-lg py-4 px-8 m-4 min-w-[360px] flex lg:flex-col gap-4">
+              <h5 className="text-lg font-bold">Row/observation risks</h5>
 
-              <Box
-                sx={{
-                  margin: "1em auto",
-                  paddingBottom: "1em",
-                  position: "relative",
-                  width: "400px",
-                }}
-              >
+              <div className="mx-auto my-1 pb-1 relative w-[400px]">
                 <Boxplot
                   width={400}
                   height={20}
@@ -138,44 +140,32 @@ export default function DisRiskR({ funs, config, data }: Props) {
                 />
 
                 {[0, 20, 40, 60, 80, 100].map((x) => (
-                  <Box
+                  <div
+                    className="absolute b-0 border-l border-l-black h-[10px]"
+                    style={{ left: x + "%" }}
                     key={x}
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: x + "%",
-                      borderLeft: "solid 1px black",
-                      height: "10px",
-                    }}
                   >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        position: "absolute",
-                        bottom: "-20px",
-                        transform: "translateX(-50%)",
-                      }}
-                    >
+                    <div className="text-xs absolute b-0 translate-y-[10px] translate-x-[-50%]">
                       {x}%
-                    </Typography>
-                  </Box>
+                    </div>
+                  </div>
                 ))}
-              </Box>
+              </div>
 
               {rData && (
-                <Box sx={{ height: "300px", marginTop: "2em" }}>
+                <div className="mt-2 h-[300px] w-[500px] 2xl:w-[700px] bg-slate-50 drop-shadow">
                   <DataGrid
                     rows={rData.rows}
                     columns={rData.cols}
                     density="compact"
                     sortModel={[{ field: "risk", sort: "desc" }]}
                   />
-                </Box>
+                </div>
               )}
-            </Grid>
+            </div>
           )}
-        </Grid>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
