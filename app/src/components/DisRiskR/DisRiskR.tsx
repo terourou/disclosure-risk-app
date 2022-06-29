@@ -1,5 +1,4 @@
 import { Typography } from "@mui/material";
-import { Box } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import Boxplot, { computeBoxplotStats } from "react-boxplot";
