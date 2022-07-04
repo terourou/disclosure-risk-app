@@ -40,23 +40,47 @@ const DisclosureResults = ({ data, config }: Props) => {
     );
   }, [data, matches, setRisk, config]);
 
-  const [loadingR, setLoadingR] = useState(false);
+  const [loadingR, setLoadingR] = useState(-1);
+
   const [Rfuns, setRfuns] = useState<any>({});
+  const [Rerror, setRerror] = useState<any>(null);
 
   const R = useRserve();
+
+  console.log(Rerror);
 
   const uploadData = () => {
     console.log(R);
     if (!R || !R.running) return;
-    R.ocap((err: any, funs: any) => {
+    R.ocap(async (err: any, funs: any) => {
       if (!data || !data.encrypted || !funs.upload_data) return;
-      setLoadingR(true);
-      funs.upload_data(data.encrypted.data, (err: any, value: any) => {
-        setRfuns({ calculate_risks: value.calculate_risks });
-        setLoadingR(false);
+      setLoadingR(0);
+
+      function uploadDataPromise(row: any) {
+        return new Promise((resolve, reject) => {
+          funs.upload_data(row, (err: any, value: any) => {
+            if (err) return reject(err);
+            resolve(value);
+          });
+        });
+      }
+
+      const ULproms = data.encrypted.data.map(async (row, i) => {
+        await uploadDataPromise(row).then((value) => setLoadingR(i));
+        return 0;
+      });
+
+      await Promise.all(ULproms);
+
+      funs.upload_data((err: any, value: any) => {
+        if (err) setRerror(err);
+        if (value) setRfuns({ calculate_risks: value.calculate_risks });
+        setLoadingR(-1);
       });
     });
   };
+
+  useEffect(() => console.log(loadingR), [loadingR]);
 
   if (data === null || config.vars.length === 0)
     return (
@@ -106,25 +130,49 @@ const DisclosureResults = ({ data, config }: Props) => {
       </div>
 
       <div className="flex-1">
-        {R &&
+        {Rerror ? (
+          <div className="text-center mt-20">
+            Sorry, it looks like there was an error sending or retrieving
+            results from R.
+          </div>
+        ) : (
+          R &&
           R.running &&
           !Rfuns.calculate_risks &&
-          (loadingR ? (
+          (loadingR >= 0 ? (
             <div className="text-lg h-[200px] flex flex-col gap-5 items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 animate-rise"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
+              {loadingR < data.data.length - 1 ? (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 animate-rise"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+
+                  <div className="h-1 w-full bg-gray-300">
+                    <div
+                      style={{
+                        width: `${(100 * (loadingR + 1)) / data.data.length}%`,
+                      }}
+                      className={`h-full bg-green-600`}
+                    ></div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-6">
+                  <div className="w-10 h-10 border-4 border-green-600 border-solid rounded-full animate-spin border-t-transparent"></div>
+                  Please wait while the server process the data.
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex items-center flex-col flex-1 justify-center gap-8 min-h-[200px]">
@@ -208,7 +256,8 @@ const DisclosureResults = ({ data, config }: Props) => {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+        )}
 
         <DisRiskR funs={Rfuns} config={config} data={data} />
       </div>

@@ -5,6 +5,7 @@ import Boxplot, { computeBoxplotStats } from "react-boxplot";
 import { Data } from "../../types/data";
 
 import { interpolateHsl } from "d3";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Props = {
   funs: any;
@@ -75,50 +76,56 @@ export default function DisRiskR({ funs, config, data }: Props) {
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
             />
           </svg>
         </div>
       ) : (
-        <div className="flex gap-2 w-full items-start justify-center">
+        <div className="flex gap-2 w-full items-start justify-center transition-all lienar duration-500">
           {res.var_contrib && (
             <div className="bg-slate-800 rounded-lg text-white p-4 m-4 min-w-[360px] flex flex-col gap-4">
               <h5 className="text-lg font-bold">
                 Variable contributions to overall risk
               </h5>
 
-              <table>
-                <tbody>
+              <div className="table">
+                <AnimatePresence>
                   {res.var_contrib
                     .sort((x1: any, x2: any) => (x1.c < x2.c ? 1 : -1))
                     .map(({ v, c }: any) => (
-                      <tr key={v}>
-                        <td className="text-right border-r border-r-white pr-2">
+                      <motion.div
+                        key={v}
+                        className="table-row h-[18px]"
+                        initial={{ opacity: 0, transform: "scaleY(0)" }}
+                        animate={{ opacity: 1, transform: "scaleY(1)" }}
+                        exit={{ opacity: 0, transform: "scaleY(0)" }}
+                      >
+                        <div className="table-cell text-right border-r border-r-white pr-2 align-middle">
                           {v}
-                        </td>
-                        <td width="100%" height="18px">
+                        </div>
+                        <div className="table-cell w-full h-full py-1">
                           <div
-                            className="h-full"
+                            className="h-full transition-all linear duration-1000"
                             style={{
                               width: c + "%",
                               background: barCol(c / 100),
                             }}
                           ></div>
-                        </td>
-                        <td>
+                        </div>
+                        <div className="table-cell">
                           <Typography variant="caption">
                             {Math.round(c * 10) / 10}%
                           </Typography>
-                        </td>
-                      </tr>
+                        </div>
+                      </motion.div>
                     ))}
-                </tbody>
-              </table>
+                </AnimatePresence>
+              </div>
             </div>
           )}
 

@@ -26,10 +26,15 @@ use_module <- function(name, env = new.env()) {
 
 give.first.functions <- function()
 {
+    tmp_data <- list()
     list(
         # return contexted functions with 'data' object available
-        upload_data = wrap.r.fun(function(x) {
-            user_data <- do.call(rbind, lapply(x, function(r) do.call(data.frame, r)))
+        upload_data = wrap.r.fun(function(x = NULL) {
+            if (!is.null(x)) {
+              tmp_data <<- c(tmp_data, list(as.data.frame(x)))
+              return(TRUE)
+            }
+            user_data <- data.table::rbindlist(tmp_data)
             use_module("DisclosureRisk", environment())
         })
     )

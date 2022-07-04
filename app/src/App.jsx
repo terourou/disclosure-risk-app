@@ -19,9 +19,9 @@ function App() {
 
       <Header />
 
-      <div className="main flex-1 flex flex-col 2xl:flex-row items-stretch gap-10 bg-gradient-to-br from-gray-50 to-green-50 p-4">
+      <div className="main flex-1 flex flex-col items-stretch gap-10 bg-gradient-to-br from-gray-50 to-green-50 p-4">
 
-        <div className="flex flex-col gap-10 2xl:w-[40%]">
+        <div className="flex flex-col gap-10 items-center">
           <div className="container h-[360px] drop-shadow">
             {data ? <ViewData data={data} /> : <LoadData setter={setData} />}
           </div>
@@ -31,13 +31,13 @@ function App() {
               <DisclosureOptions data={data} config={config} handler={setConfig} />
             </div>
           )}
-        </div>
 
-        {data && (
-          <div className="container flex-1 flex justify-center p-5">
-            <DisclosureResults data={data} config={config} />
-          </div>
-        )}
+          {data && (
+            <div className="container flex-1 flex justify-center p-5">
+              <DisclosureResults data={data} config={config} />
+            </div>
+          )}
+        </div>
 
       </div>
 
