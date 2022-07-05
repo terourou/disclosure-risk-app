@@ -8,6 +8,15 @@ import { useRserve } from "@tmelliott/react-rserve";
 import DisRiskR from "./DisRiskR/DisRiskR";
 import Stat from "./widgets/Stat";
 
+function chunkArray(x: any, s: number) {
+  const y = [];
+  while (x.length > 0) {
+    const chunk = x.splice(0, s);
+    y.push(chunk);
+  }
+  return y;
+}
+
 type Props = {
   data: Data | null;
   config: any;
@@ -47,26 +56,31 @@ const DisclosureResults = ({ data, config }: Props) => {
 
   const R = useRserve();
 
-  console.log(Rerror);
-
   const uploadData = () => {
-    console.log(R);
     if (!R || !R.running) return;
     R.ocap(async (err: any, funs: any) => {
       if (!data || !data.encrypted || !funs.upload_data) return;
       setLoadingR(0);
 
-      function uploadDataPromise(row: any) {
+      function uploadDataPromise(rows: any) {
         return new Promise((resolve, reject) => {
-          funs.upload_data(row, (err: any, value: any) => {
+          funs.upload_data(rows, (err: any, value: any) => {
             if (err) return reject(err);
             resolve(value);
           });
         });
       }
 
-      const ULproms = data.encrypted.data.map(async (row, i) => {
-        await uploadDataPromise(row).then((value) => setLoadingR(i));
+      let chunkSize = Math.min(
+        100,
+        Math.max(1, Math.round(5000 / data.vars.length))
+      );
+      const chunks = chunkArray(data.encrypted.data, chunkSize);
+      const ULproms = chunks.map(async (rows, i) => {
+        await uploadDataPromise(rows).then(() => {
+          if (i === chunks.length - 1 || i % 10 === 0)
+            setLoadingR(i * chunkSize);
+        });
         return 0;
       });
 
@@ -79,8 +93,6 @@ const DisclosureResults = ({ data, config }: Props) => {
       });
     });
   };
-
-  useEffect(() => console.log(loadingR), [loadingR]);
 
   if (data === null || config.vars.length === 0)
     return (
@@ -163,7 +175,7 @@ const DisclosureResults = ({ data, config }: Props) => {
                       style={{
                         width: `${(100 * (loadingR + 1)) / data.data.length}%`,
                       }}
-                      className={`h-full bg-green-600`}
+                      className={`h-full bg-green-600 transition-all`}
                     ></div>
                   </div>
                 </>
@@ -214,12 +226,10 @@ const DisclosureResults = ({ data, config }: Props) => {
                         Uploading data to our server will provide addional
                         information:
                       </p>
-                      <p className="indent-4">
-                        <ul className="list-disc list-inside">
-                          <li>Risk contributions of each variable</li>
-                          <li>Individual risk of each row/observation</li>
-                        </ul>
-                      </p>
+                      <ul className="list-disc list-inside indent-4">
+                        <li>Risk contributions of each variable</li>
+                        <li>Individual risk of each row/observation</li>
+                      </ul>
                       <p>
                         This information requires the use of methods in the R
                         package 'sdcMicro', and so cannot be performed locally.

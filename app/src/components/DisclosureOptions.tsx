@@ -64,8 +64,6 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
 
   if (data === null) return <></>;
 
-  console.log(config.vars);
-
   return (
     <div className="flex flex-col gap-4">
       <p>

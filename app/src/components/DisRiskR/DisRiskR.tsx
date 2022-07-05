@@ -108,7 +108,7 @@ export default function DisRiskR({ funs, config, data }: Props) {
                         <div className="table-cell text-right border-r border-r-white pr-2 align-middle">
                           {v}
                         </div>
-                        <div className="table-cell w-full h-full py-1">
+                        <div className="table-cell w-full h-full py-1 pr-2">
                           <div
                             className="h-full transition-all linear duration-1000"
                             style={{
