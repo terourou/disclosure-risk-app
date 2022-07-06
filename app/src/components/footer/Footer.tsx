@@ -1,7 +1,7 @@
 import { useRserve } from "@tmelliott/react-rserve";
 
 const Footer = () => {
-  const R = useRserve();
+  const { R, connecting } = useRserve();
 
   return (
     <footer className="flex text-white items-center justify-between flex-wrap bg-grey-darkest p-4 bg-gradient-to-br from-gray-700 to-gray-800">
@@ -17,6 +17,8 @@ const Footer = () => {
             ? "Connected to R at " +
                 process.env.REACT_APP_R_HOST?.replace(/^wss?:\/\//, "") ||
               "localhost"
+            : connecting
+            ? "Connecting to R ..."
             : "Not connected to R"}
         </span>
       </div>

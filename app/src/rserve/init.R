@@ -28,6 +28,7 @@ give.first.functions <- function()
 {
     tmp_data <- NULL
     list(
+        heartbeat = wrap.r.fun(function() TRUE),
         # return contexted functions with 'data' object available
         upload_data = wrap.r.fun(function(x = NULL) {
             if (!is.null(x)) {

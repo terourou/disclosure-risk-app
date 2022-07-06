@@ -1944,10 +1944,10 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-"@tmelliott/react-rserve@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@tmelliott/react-rserve/-/react-rserve-0.1.0.tgz#adf73f86397010aae6d86453cebdf9524a0548cc"
-  integrity sha512-lD8YI2oHXqkDL3w+2Hk/8Do8l71UeIm8sSFc+YUvCldraqXFPWXrfemZFUGl50MMVDSM+2IrJcdjdwnBWWLkag==
+"@tmelliott/react-rserve@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@tmelliott/react-rserve/-/react-rserve-0.1.2.tgz#dfb1c680ed83949e450cdc56da3fbbc853d6caca"
+  integrity sha512-KGWZoCBbvfubPdiBRhEpjfrQMypiCNyGClE/J3RTPuML5qYttruNYUb6tXIMVNGc5LWTdaFUeR4i7SXEf7v2XA==
   dependencies:
     underscore "^1.13.4"
 

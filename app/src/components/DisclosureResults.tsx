@@ -54,10 +54,16 @@ const DisclosureResults = ({ data, config }: Props) => {
   const [Rfuns, setRfuns] = useState<any>({});
   const [Rerror, setRerror] = useState<any>(null);
 
-  const R = useRserve();
+  const { R } = useRserve();
 
   const uploadData = () => {
-    if (!R || !R.running) return;
+    if (!R || !R.running) {
+      setLoadingR(-1);
+      setRfuns({});
+      setRerror(null);
+      return;
+    }
+
     R.ocap(async (err: any, funs: any) => {
       if (!data || !data.encrypted || !funs.upload_data) return;
       setLoadingR(0);
