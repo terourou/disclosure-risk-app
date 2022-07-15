@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { motion } from "framer-motion";
+
 import Papa from "papaparse";
 
 type Props = {
@@ -100,7 +102,8 @@ const LoadData = ({ setter }: Props) => {
   }, [file, setter]);
 
   return (
-    <label
+    <motion.label
+      layoutId="data-panel"
       className={`h-full w-full bg-slate-600 flex flex-col gap-4 items-center justify-center rounded text-neutral-200 text-lg cursor-pointer drop-shadow-xl hover:bg-slate-700 transition-all p-4 text-center  ${
         loading && "animate-pulse"
       }`}
@@ -121,7 +124,7 @@ const LoadData = ({ setter }: Props) => {
           <input type="file" hidden onChange={loadData} />
         </>
       )}
-    </label>
+    </motion.label>
   );
 };
 

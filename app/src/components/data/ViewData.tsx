@@ -2,11 +2,14 @@ import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Data } from "../../types/data";
 
+import { motion } from "framer-motion";
+
 type Props = {
   data: Data;
+  clear: Function;
 };
 
-function ViewData({ data }: Props) {
+function ViewData({ data, clear }: Props) {
   const [display, setDisplay] = useState("raw");
 
   const toggleDataView = (event: any) => {
@@ -14,23 +17,40 @@ function ViewData({ data }: Props) {
   };
 
   return (
-    <>
-      <div className="w-full h-full flex flex-col gap-2 items-end">
-        <div className="w-full flex-1 bg-slate-50">
-          {/* TODO: convert this to plain CSS table with https://flowbite.com/docs/components/tables/ */}
-          <DataGrid
-            rows={
-              display === "raw" || !data.encrypted
-                ? data.data
-                : data.encrypted.data
-            }
-            columns={
-              display === "raw" || !data.encrypted
-                ? data.vars
-                : data.encrypted.vars
-            }
-          />
-        </div>
+    <motion.div
+      className="w-full h-full flex flex-col gap-2"
+      layoutId="data-panel"
+      transition={{ duration: 1 }}
+    >
+      <div className="w-full flex-1 bg-slate-50">
+        {/* TODO: convert this to plain CSS table with https://flowbite.com/docs/components/tables/ */}
+        <DataGrid
+          rows={
+            display === "raw" || !data.encrypted
+              ? data.data
+              : data.encrypted.data
+          }
+          columns={
+            display === "raw" || !data.encrypted
+              ? data.vars
+              : data.encrypted.vars
+          }
+        />
+      </div>
+
+      <motion.div
+        className="flex justify-between items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ delay: 1 }}
+      >
+        <button
+          className="px-4 py-2 bg-orange-600 text-orange-50 rounded shadow"
+          onClick={() => clear()}
+        >
+          Clear data
+        </button>
 
         <label
           htmlFor="default-toggle"
@@ -49,8 +69,8 @@ function ViewData({ data }: Props) {
             information removed)
           </span>
         </label>
-      </div>
-    </>
+      </motion.div>
+    </motion.div>
   );
 }
 
