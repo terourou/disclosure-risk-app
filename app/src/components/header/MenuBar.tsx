@@ -11,6 +11,7 @@ const MenuBar = (props: Props) => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Disclosure Risk Calculator
           </Typography>
+          <Button color="inherit">Home</Button>
           <Button color="inherit">About</Button>
         </Toolbar>
       </AppBar>

@@ -86,7 +86,7 @@ export default function DisRiskR({ funs, config, data }: Props) {
           </svg>
         </div>
       ) : (
-        <div className="flex gap-2 w-full items-start justify-center transition-all lienar duration-500">
+        <div className="flex flex-col lg:flex-row gap-2 w-full items-center lg:items-start justify-center transition-all lienar duration-500">
           {res.var_contrib && (
             <div className="bg-slate-800 rounded-lg text-white p-4 m-4 min-w-[360px] flex flex-col gap-4">
               <h5 className="text-lg font-bold">
@@ -130,7 +130,7 @@ export default function DisRiskR({ funs, config, data }: Props) {
           )}
 
           {res.indiv_risk && (
-            <div className="bg-green-100 rounded-lg py-4 px-8 m-4 min-w-[360px] flex lg:flex-col gap-4">
+            <div className="bg-green-100 rounded-lg py-4 px-8 m-4 min-w-[360px] flex flex-col gap-4">
               <h5 className="text-lg font-bold">Row/observation risks</h5>
 
               <div className="mx-auto my-1 pb-1 relative w-[400px]">

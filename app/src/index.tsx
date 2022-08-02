@@ -9,6 +9,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { CssBaseline } from "@mui/material";
 import { Rserve } from "@tmelliott/react-rserve";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -19,7 +20,9 @@ root.render(
     <Rserve
       {...{ host: process.env.REACT_APP_R_HOST || "ws://localhost:8111" }}
     >
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Rserve>
   </>
 );

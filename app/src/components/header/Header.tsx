@@ -7,7 +7,7 @@ const Header = () => {
         <Link to="/">
           <div className="text-xl font-bold pl-2 flex items-center gap-4">
             <div className="h-14 p-3 bg-white rounded-full">
-              <img src="/logo.png" className="h-full" />
+              <img src="/logo.png" className="h-full" alt="Logo" />
             </div>
             <div className="flex flex-col">
               {/* <span className="pl-[50px] text-[40px] text-red-200 mb-[-50px] font-['Tangerine']">
@@ -26,7 +26,12 @@ const Header = () => {
       >
         <ul className="list-reset lg:flex justify-end flex-1 items-center">
           <li className="mr-3">
-            <Link to="about">
+            <Link to="/">
+              <span className="inline-block py-2 px-4 no-underline cursor-pointer">
+                Home
+              </span>
+            </Link>
+            <Link to="/about">
               <span className="inline-block py-2 px-4 no-underline cursor-pointer">
                 About
               </span>

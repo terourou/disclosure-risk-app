@@ -111,28 +111,30 @@ const DisclosureResults = ({ data, config }: Props) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-center">
-        <div className="flex flex-row gap-10 items-stretch">
-          <div className="flex flex-col gap-5 items-center justify-center">
-            <Stat value={data.data.length} name="observations" />
-            <Stat
-              value={Math.round(data.data.length / (config.sfrac || 1))}
-              name="total population"
-            />
-          </div>
-          <div className="flex flex-col gap-5 items-center justify-center">
-            <Stat
-              value={Math.round(1000 * config.sfrac || 1) / 10}
-              name="sampling fraction"
-              unit="%"
-            />
-          </div>
-          <div className="flex flex-col gap-5 items-center justify-center border-l pl-20 px-10">
-            <Stat value={config.vars.length} name="variables" />
-            <Stat value={matches.uniques} name="unique combinations" />
-            <Stat value={matches.pairs} name="pairs" />
+        <div className="flex flex-col lg:flex-row gap-10 items-stretch">
+          <div className="flex flex-row gap-10 items-center">
+            <div className="flex flex-col gap-5 items-center justify-center">
+              <Stat value={data.data.length} name="observations" />
+              <Stat
+                value={Math.round(data.data.length / (config.sfrac || 1))}
+                name="total population"
+              />
+            </div>
+            <div className="flex flex-col gap-5 items-center justify-center">
+              <Stat
+                value={Math.round(1000 * config.sfrac || 1) / 10}
+                name="sampling fraction"
+                unit="%"
+              />
+            </div>
+            <div className="flex flex-col gap-5 items-center justify-center border-l pl-20 px-10">
+              <Stat value={config.vars.length} name="variables" />
+              <Stat value={matches.uniques} name="unique combinations" />
+              <Stat value={matches.pairs} name="pairs" />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-4 items-center justify-center border-l pl-20 w-[360px]">
+          <div className="flex flex-col gap-4 items-center justify-center border-t lg:border-t-0 lg:border-l pt-4 lg:pl-20 lg:w-[360px]">
             <p>Estimated disclosure risk:</p>
             <GaugeChart
               id="gauge-chart4"
