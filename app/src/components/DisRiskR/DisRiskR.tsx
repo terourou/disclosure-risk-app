@@ -149,7 +149,7 @@ export default function DisRiskR({ funs, config, data }: Props) {
                   <div
                     className="absolute b-0 border-l border-l-black h-[10px]"
                     style={{ left: x + "%" }}
-                    key={x}
+                    key={"percent-" + x}
                   >
                     <div className="text-xs absolute b-0 translate-y-[10px] translate-x-[-50%]">
                       {x}%

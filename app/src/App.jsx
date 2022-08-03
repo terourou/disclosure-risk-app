@@ -24,17 +24,17 @@ function App() {
     <div className="App flex flex-col bg-black gap-1 min-h-screen justify-center">
 
       <AnimatePresence>
-        <Header />
+        <Header key={"header"} />
 
         <div className="main flex-1 flex flex-col items-stretch gap-10 bg-gradient-to-br from-gray-50 to-green-50 p-4">
-          <Routes location={location} key={location.pathname}>
+          <Routes location={location} key={"path-" + location.pathname}>
             <Route path="/" element={<Main data={data} setData={setData} config={config} setConfig={setConfig} />} />
             <Route path="/about" element={<About />} />
           </Routes>
         </div>
       </AnimatePresence>
 
-      <Footer />
+      <Footer key="footer" />
 
     </div >
   );
@@ -64,7 +64,7 @@ function Main({ data, setData, config, setConfig }) {
       exit="out"
       className="flex flex-col gap-10 items-center 2xl:flex-row 2xl:items-start 2xl:justify-center">
       <div className="w-full 2xl:max-w-[40vw] flex flex-col gap-10 items-center">
-        <div className="container h-[360px] drop-shadow">
+        <div className="container h-[420px] drop-shadow">
           {data ? <ViewData data={data} clear={() => setData(null)} /> : <LoadData setter={setData} />}
         </div>
 

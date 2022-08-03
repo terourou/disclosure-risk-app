@@ -10,9 +10,6 @@ const Header = () => {
               <img src="/logo.png" className="h-full" alt="Logo" />
             </div>
             <div className="flex flex-col">
-              {/* <span className="pl-[50px] text-[40px] text-red-200 mb-[-50px] font-['Tangerine']">
-                <span className="text-[70px]">C</span>alculator
-              </span> */}
               <span>Disclosure Risk</span>
               <span className="">Calculator</span>
             </div>

@@ -102,7 +102,7 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
               renderValue={(selected: any) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value: string) => (
-                    <Chip key={value} label={value} />
+                    <Chip key={"var-" + value} label={value} />
                   ))}
                 </Box>
               )}
