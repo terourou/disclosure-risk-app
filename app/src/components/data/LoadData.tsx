@@ -33,7 +33,6 @@ const LoadData = ({ setter }: Props) => {
 
   const processData = useCallback(
     (d: any[]) => {
-      console.log(d);
       const keys = Object.keys(d[0]).map((key) => ({
         field: key,
         headerName: key,
@@ -58,7 +57,7 @@ const LoadData = ({ setter }: Props) => {
       // encrypt data
       const encArray = keys.map((v, i) => ({
         original: v.field,
-        encrypted: i === 0 ? v.field : "v" + i,
+        encrypted: v.field === "id" ? v.field : "v" + i,
         values: d
           .map((x) => x[v.field])
           .filter(distinct)
