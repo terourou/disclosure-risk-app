@@ -94,15 +94,8 @@ server {
 }
 EOF
 
-cat << EOF > /etc/nginx/sites-available/risk.terourou.org
-server {
-    listen       80;
-    listen       [::]:80;
-
-    location / {
-        return 301 https://$host$request_uri;
-    }
-}
+cat << EOF > /etc/nginx/sites-available/plausible.terourou.org
+proxy_cache_path /var/run/nginx-cache/jscache levels=1:2 keys_zone=jscache:100m inactive=30d  use_temp_path=off max_size=100m;
 
 server {
     listen 443 ssl http2;
@@ -134,6 +127,42 @@ server {
     server_name   plausible.terourou.org;
     # root          /home/tom/disclosure-risk-app/app/build/;
 
+    location = /js/script.js {
+        # Change this if you use a different variant of the script
+        proxy_pass https://plausible.terourou.org/js/script.js;
+
+        # Tiny, negligible performance improvement. Very optional.
+        proxy_buffering on;
+
+        # Cache the script for 6 hours, as long as plausible.io returns a valid response
+        proxy_cache jscache;
+        proxy_cache_valid 200 6h;
+        proxy_cache_use_stale updating error timeout invalid_header http_500;
+
+        # Optional. Adds a header to tell if you got a cache hit or miss
+        add_header X-Cache $upstream_cache_status;
+
+        proxy_set_header Host plausible.terourou.org;
+        proxy_ssl_name plausible.terourou.org;
+        proxy_ssl_server_name on;
+        proxy_ssl_session_reuse off;
+    }
+
+    location = /api/event {
+        proxy_pass https://plausible.terourou.org/api/event;
+        proxy_buffering on;
+        proxy_http_version 1.1;
+
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host  $host;
+
+        proxy_set_header Host plausible.terourou.org;
+        proxy_ssl_name plausible.terourou.org;
+        proxy_ssl_server_name on;
+        proxy_ssl_session_reuse off;
+    }
+
     location / {
         proxy_pass http://localhost:8000;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -149,6 +178,9 @@ server {
 }
 EOF
 
+mkdir -p /var/run/nginx-cache
+echo "D /run/nginx-cache 0755 root root -" > /usr/lib/tmpfiles.d/nginx-cache.conf
+
 rm -f /etc/nginx/sites-enabled/risk.terourou.org
 ln -s /etc/nginx/sites-available/risk.terourou.org /etc/nginx/sites-enabled/risk.terourou.org
 ln -s /etc/nginx/sites-available/plausible.terourou.org /etc/nginx/sites-enabled/plausible.terourou.org
@@ -163,8 +195,10 @@ echo "REACT_APP_R_HOST=\"wss://risk.terourou.org/ws\"" >> disclosure-risk-app/ap
 cat << EOF > update.sh
 #!/bin/sh
 
-cd disclosure-risk-app && git pull
+cd ~/hosting && docker-compose down --remove-orphans
+cd ~/disclosure-risk-app && git pull
 cd app && yarn && yarn build
+cd ~/hosting && docker-compose up -d
 
 docker pull tmelliott/disrisk
 docker stop disrisk-app || true
