@@ -31,10 +31,21 @@ apt-get update & apt-get install yarn
 
 systemctl stop nginx
 certbot certonly --standalone --agree-tos -d risk.terourou.org  -m terourounz@gmail.com
-certbot certonly --standalone --agree-tos -d plausible.terourou.org  -m terourounz@gmail.com
+certbot certonly --standalone --agree-tos -d info.terourou.org -d plausible.terourou.org -m terourounz@gmail.com
 systemctl start nginx
 
 cat << EOF > /etc/nginx/sites-available/risk.terourou.org
+proxy_cache_path /var/run/nginx-cache/jscache levels=1:2 keys_zone=jscache:100m inactive=30d  use_temp_path=off max_size=100m;
+
+server {
+    listen       80;
+    listen       [::]:80;
+
+    location / {
+        return 301 https://\$host\$request_uri;
+    }
+}
+
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
@@ -79,9 +90,45 @@ server {
         proxy_set_header Connection "Upgrade";
     }
 
+    location = /js/ {
+        # Change this if you use a different variant of the script
+        proxy_pass http://localhost:8000/js/;
+
+        # Tiny, negligible performance improvement. Very optional.
+        proxy_buffering on;
+
+        # Cache the script for 6 hours, as long as plausible.io returns a valid response
+        proxy_cache jscache;
+        proxy_cache_valid 200 6h;
+        proxy_cache_use_stale updating error timeout invalid_header http_500;
+
+        # Optional. Adds a header to tell if you got a cache hit or miss
+        add_header X-Cache \$upstream_cache_status;
+
+        proxy_set_header Host plausible.terourou.org;
+        proxy_ssl_name plausible.terourou.org;
+        proxy_ssl_server_name on;
+        proxy_ssl_session_reuse off;
+    }
+
+    location = /api/event {
+        proxy_pass http://localhost:8000/api/event;
+        proxy_buffering on;
+        proxy_http_version 1.1;
+
+        proxy_set_header X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host  \$host;
+
+        proxy_set_header Host plausible.terourou.org;
+        proxy_ssl_name plausible.terourou.org;
+        proxy_ssl_server_name on;
+        proxy_ssl_session_reuse off;
+    }
+
     location / {
         root /home/tom/disclosure-risk-app/app/build/;
-        try_files $uri /index.html;
+        try_files \$uri /index.html;
     }
 
     error_page 404 /404.html;
@@ -95,14 +142,12 @@ server {
 EOF
 
 cat << EOF > /etc/nginx/sites-available/plausible.terourou.org
-proxy_cache_path /var/run/nginx-cache/jscache levels=1:2 keys_zone=jscache:100m inactive=30d  use_temp_path=off max_size=100m;
-
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
 
-    ssl_certificate /etc/letsencrypt/live/plausible.terourou.org/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/plausible.terourou.org/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/info.terourou.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/info.terourou.org/privkey.pem;
     ssl_session_timeout 1d;
     ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
     ssl_session_tickets off;
@@ -124,48 +169,12 @@ server {
     # replace with the IP address of your resolver
     resolver 8.8.8.8;
 
-    server_name   plausible.terourou.org;
+    server_name   plausible.terourou.org info.terourou.org;
     # root          /home/tom/disclosure-risk-app/app/build/;
-
-    location = /js/script.js {
-        # Change this if you use a different variant of the script
-        proxy_pass https://plausible.terourou.org/js/script.js;
-
-        # Tiny, negligible performance improvement. Very optional.
-        proxy_buffering on;
-
-        # Cache the script for 6 hours, as long as plausible.io returns a valid response
-        proxy_cache jscache;
-        proxy_cache_valid 200 6h;
-        proxy_cache_use_stale updating error timeout invalid_header http_500;
-
-        # Optional. Adds a header to tell if you got a cache hit or miss
-        add_header X-Cache $upstream_cache_status;
-
-        proxy_set_header Host plausible.terourou.org;
-        proxy_ssl_name plausible.terourou.org;
-        proxy_ssl_server_name on;
-        proxy_ssl_session_reuse off;
-    }
-
-    location = /api/event {
-        proxy_pass https://plausible.terourou.org/api/event;
-        proxy_buffering on;
-        proxy_http_version 1.1;
-
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host  $host;
-
-        proxy_set_header Host plausible.terourou.org;
-        proxy_ssl_name plausible.terourou.org;
-        proxy_ssl_server_name on;
-        proxy_ssl_session_reuse off;
-    }
 
     location / {
         proxy_pass http://localhost:8000;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     }
 
     error_page 404 /404.html;
