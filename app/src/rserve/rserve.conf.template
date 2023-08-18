@@ -1,5 +1,5 @@
 websockets enable
-websockets.port 8081
+websockets.port $PORT
 oob enable
 qap enable
 websockets.qap.oc enable
