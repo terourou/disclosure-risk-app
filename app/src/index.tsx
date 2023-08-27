@@ -18,7 +18,9 @@ root.render(
   <>
     <CssBaseline />
     <Rserve
-      {...{ host: process.env.REACT_APP_R_HOST || "ws://localhost:8111" }}
+      {...{
+        host: process.env.REACT_APP_R_HOST || "ws://localhost:8111",
+      }}
     >
       <BrowserRouter>
         <App />
