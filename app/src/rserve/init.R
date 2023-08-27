@@ -26,10 +26,18 @@ use_module <- function(name, env = new.env()) {
 
 give.first.functions <- function()
 {
+    tmp_data <- NULL
     list(
+        heartbeat = wrap.r.fun(function() TRUE),
         # return contexted functions with 'data' object available
-        upload_data = wrap.r.fun(function(x) {
-            user_data <- do.call(rbind, lapply(x, function(r) do.call(data.frame, r)))
+        upload_data = wrap.r.fun(function(x = NULL) {
+            if (!is.null(x)) {
+              dt_list <- purrr::map(x, data.table::as.data.table)
+              tmp_data <<- rbind(tmp_data, data.table::rbindlist(dt_list))
+              return(TRUE)
+            }
+            user_data <- as.data.frame(tmp_data)
+            tmp_data <<- NULL
             use_module("DisclosureRisk", environment())
         })
     )

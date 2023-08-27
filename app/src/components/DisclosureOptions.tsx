@@ -66,7 +66,19 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-xl">Configuration options</h3>
+      <p>
+        Select variables that might be used for identification either alone or
+        in combination with others. What these are depends on your data. E.g.,
+        for data on humans, variables like name, age, sex, address/location, or
+        occupation might be used for identifiers; while for data on businesses,
+        business name, size, address/location and industry might be used.
+      </p>
+
+      <p>
+        Also enter the population size or sampling fraction for your data. E.g.,
+        for a sample of adults in a region, enter the total number of adults in
+        the region, or the fraction of adults in your sample.
+      </p>
 
       {/* TODO: replace MUI components with tailwind CSS ones */}
       <div className="flex gap-2 flex-wrap">
@@ -90,16 +102,14 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
               renderValue={(selected: any) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value: string) => (
-                    <Chip key={value} label={value} />
+                    <Chip key={"var-" + value} label={value} />
                   ))}
                 </Box>
               )}
               MenuProps={MenuProps}
             >
               {data.vars
-                .filter(
-                  (x, i) => x.field !== "id" && data.types[i - 1] === "string"
-                )
+                .filter((x, i) => x.field !== "id")
                 .map((x) => (
                   <MenuItem key={x.field} value={x.field}>
                     {x.headerName}

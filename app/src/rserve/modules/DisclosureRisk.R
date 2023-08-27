@@ -1,4 +1,7 @@
 calculate_risks <- function(conf) {
+
+    if (is.null(conf$sfrac)) conf$sfrac <- 1
+
     sdc_data <- sdcMicro::createSdcObj(user_data, conf$vars)
     s2 <- sdcMicro::suda2(sdc_data, DisFraction = as.numeric(conf$sfrac))
     sd2 <- s2@risk$suda2
