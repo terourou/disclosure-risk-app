@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
 import Header from "./components/header/Header";
@@ -18,6 +18,15 @@ function App() {
   const [config, setConfig] = useState({ vars: [] });
 
   const location = useLocation();
+
+  useEffect(() => {
+    var _mtm = window._mtm = window._mtm || [];
+    _mtm.push({ 'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start' });
+    (function () {
+      var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+      g.async = true; g.src = 'https://ec2-3-104-45-196.ap-southeast-2.compute.amazonaws.com/js/container_YbYkzbgl.js'; s.parentNode.insertBefore(g, s);
+    })();
+  }, [])
 
   return (
     // a side-by-side for development
