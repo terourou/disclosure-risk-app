@@ -15,7 +15,7 @@ function distinct(value: any, index: number, self: any) {
 }
 
 function encrypt(value: any, values: any) {
-  return "X" + values.indexOf(value);
+  return "X" + values.indexOf(value.toString());
 }
 
 const LoadData = ({ setter }: Props) => {
