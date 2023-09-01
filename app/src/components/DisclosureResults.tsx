@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import { Data } from "../types/data";
+import { Data, Row } from "../types/data";
 import { calculate_matches, disRisk } from "../lib/disRisk";
 
 import GaugeChart from "react-gauge-chart";
 
 import { useRserve } from "@tmelliott/react-rserve";
-import DisRiskR from "./DisRiskR/DisRiskR";
+import DisRiskR, { DisRiskFuns } from "./DisRiskR/DisRiskR";
 import Stat from "./widgets/Stat";
+import { Config } from "./DisclosureOptions";
 
-function chunkArray(x: any, s: number) {
+function chunkArray(x: Row[], s: number) {
   const y = [];
   while (x.length > 0) {
     const chunk = x.splice(0, s);
@@ -19,7 +20,7 @@ function chunkArray(x: any, s: number) {
 
 type Props = {
   data: Data | null;
-  config: any;
+  config: Config;
 };
 
 const DisclosureResults = ({ data, config }: Props) => {
@@ -33,15 +34,13 @@ const DisclosureResults = ({ data, config }: Props) => {
   useEffect(() => {
     if (data === null || config.vars.length === 0) return;
 
-    setMatches(
-      calculate_matches(
-        data.data.map((row: any) => config.vars.map((k: string) => row[k]))
-      )
-    );
+    const d = data.data.map((row) => config.vars.map((k) => row[k]));
+    setMatches(calculate_matches(d));
   }, [data, config]);
 
   useEffect(() => {
     if (data === null) return;
+    if (!config.sfrac) return;
     setRisk(
       Math.round(
         100 * disRisk(config.sfrac, matches.uniques, matches.pairs) * 10
@@ -51,7 +50,7 @@ const DisclosureResults = ({ data, config }: Props) => {
 
   const [loadingR, setLoadingR] = useState(-1);
 
-  const [Rfuns, setRfuns] = useState<any>({});
+  const [Rfuns, setRfuns] = useState<DisRiskFuns>({});
   const [Rerror, setRerror] = useState<any>(null);
 
   const { R } = useRserve();
@@ -64,40 +63,51 @@ const DisclosureResults = ({ data, config }: Props) => {
       return;
     }
 
-    R.ocap(async (err: any, funs: any) => {
-      if (!data || !data.encrypted || !funs.upload_data) return;
-      setLoadingR(0);
+    R.ocap(
+      async (
+        err: any,
+        funs: {
+          upload_data?: (
+            rows: Row[] | undefined,
+            callback: (err: any, value: DisRiskFuns | undefined) => void
+          ) => void;
+        }
+      ) => {
+        if (!data || !data.encrypted || !funs.upload_data) return;
+        setLoadingR(0);
 
-      function uploadDataPromise(rows: any) {
-        return new Promise((resolve, reject) => {
-          funs.upload_data(rows, (err: any, value: any) => {
-            if (err) return reject(err);
-            resolve(value);
+        function uploadDataPromise(rows: Row[]) {
+          return new Promise((resolve, reject) => {
+            if (!funs.upload_data) return reject("No upload_data function");
+            funs.upload_data(rows, (err, value) => {
+              if (err) return reject(err);
+              resolve(value);
+            });
           });
+        }
+
+        let chunkSize = Math.min(
+          100,
+          Math.max(1, Math.round(5000 / data.vars.length))
+        );
+        const chunks = chunkArray(data.encrypted.data, chunkSize);
+        const ULproms = chunks.map(async (rows, i) => {
+          await uploadDataPromise(rows).then(() => {
+            if (i === chunks.length - 1 || i % 10 === 0)
+              setLoadingR(i * chunkSize);
+          });
+          return 0;
+        });
+
+        await Promise.all(ULproms);
+
+        funs.upload_data(undefined, (err, value) => {
+          if (err) setRerror(err);
+          if (value) setRfuns({ calculate_risks: value.calculate_risks });
+          setLoadingR(-1);
         });
       }
-
-      let chunkSize = Math.min(
-        100,
-        Math.max(1, Math.round(5000 / data.vars.length))
-      );
-      const chunks = chunkArray(data.encrypted.data, chunkSize);
-      const ULproms = chunks.map(async (rows, i) => {
-        await uploadDataPromise(rows).then(() => {
-          if (i === chunks.length - 1 || i % 10 === 0)
-            setLoadingR(i * chunkSize);
-        });
-        return 0;
-      });
-
-      await Promise.all(ULproms);
-
-      funs.upload_data((err: any, value: any) => {
-        if (err) setRerror(err);
-        if (value) setRfuns({ calculate_risks: value.calculate_risks });
-        setLoadingR(-1);
-      });
-    });
+    );
   };
 
   if (data === null || config.vars.length === 0)
@@ -122,7 +132,7 @@ const DisclosureResults = ({ data, config }: Props) => {
             </div>
             <div className="flex flex-col gap-5 items-center justify-center">
               <Stat
-                value={Math.round(1000 * config.sfrac || 1) / 10}
+                value={Math.round(1000 * (config.sfrac || 1)) / 10}
                 name="sampling fraction"
                 unit="%"
               />

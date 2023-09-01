@@ -1,31 +1,50 @@
 import { Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import Boxplot, { computeBoxplotStats } from "react-boxplot";
-import { Data } from "../../types/data";
+import { Data, Row } from "../../types/data";
 
 import { interpolateHsl } from "d3";
 import { AnimatePresence, motion } from "framer-motion";
+import { Config } from "../DisclosureOptions";
+
+export type DisRiskFuns = {
+  calculate_risks?: (
+    args: { sfrac: number; vars: string[] },
+    callback: (err: any, value: DisRiskResult) => void
+  ) => void;
+};
+
+type DisRiskResult = {
+  indiv_risk: number[];
+  var_contrib: { v: string; c: number }[];
+};
+
+type DisRiskRData = {
+  cols: GridColDef[];
+  rows: (Row & { row: number; risk: number })[];
+};
 
 type Props = {
-  funs: any;
-  config: any;
+  funs: DisRiskFuns;
+  config: Config;
   data: Data | null;
 };
 
 export default function DisRiskR({ funs, config, data }: Props) {
-  const [res, setRes] = useState<any | null>(null);
-  const [rData, setRData] = useState<any | null>(null);
+  const [res, setRes] = useState<DisRiskResult>();
+  const [rData, setRData] = useState<DisRiskRData>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!funs || !funs.calculate_risks) return;
+    if (!config || !config.sfrac || !config.vars || !config.encvars) return;
     setLoading(true);
     funs.calculate_risks(
       { sfrac: config.sfrac, vars: config.encvars },
-      (err: any, value: any) => {
+      (err: any, value: DisRiskResult) => {
         // re-label variables
-        value.var_contrib = value.var_contrib.map((x: any, i: number) => ({
+        value.var_contrib = value.var_contrib.map((x, i) => ({
           ...x,
           v: config.vars[i],
         }));
@@ -52,7 +71,7 @@ export default function DisRiskR({ funs, config, data }: Props) {
           },
           ...data.vars.filter((x) => config.vars.indexOf(x.field) !== -1),
         ],
-        rows: data.data.map((x: any, i: number) => ({
+        rows: data.data.map((x, i) => ({
           ...x,
           row: i + 1,
           risk: Math.round(res.indiv_risk[i] * 1000) / 10,
@@ -96,8 +115,8 @@ export default function DisRiskR({ funs, config, data }: Props) {
               <div className="table">
                 <AnimatePresence>
                   {res.var_contrib
-                    .sort((x1: any, x2: any) => (x1.c < x2.c ? 1 : -1))
-                    .map(({ v, c }: any) => (
+                    .sort((x1, x2) => (x1.c < x2.c ? 1 : -1))
+                    .map(({ v, c }) => (
                       <motion.div
                         key={v}
                         className="table-row h-[18px]"

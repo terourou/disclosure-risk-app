@@ -1,6 +1,8 @@
 import { GridColDef } from "@mui/x-data-grid";
 
-export type Row = any;
+export type Row = {
+  [key: string]: string | number;
+};
 
 export type Data = {
   vars: GridColDef[];

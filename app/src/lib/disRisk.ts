@@ -23,14 +23,14 @@ export function disRisk(
  * @param data array of data
  * @returns Tumber of sample uniques and paired observations in the data set.
  */
-export function calculate_matches(data: any): {
+export function calculate_matches(data: (string | number)[][]): {
   uniques: number;
   pairs: number;
 } {
-  const values = data.map((row: any) => Object.values(row).join("|"));
+  const values = data.map((row) => Object.values(row).join("|"));
   const table = values.reduce(
-    (acc: any, e: string) => acc.set(e, (acc.get(e) || 0) + 1),
-    new Map()
+    (acc, e: string) => acc.set(e, (acc.get(e) || 0) + 1),
+    new Map<string, number>()
   );
 
   let uniques = 0,

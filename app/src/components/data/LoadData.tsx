@@ -2,24 +2,31 @@ import { useCallback, useEffect, useState } from "react";
 
 import { motion } from "framer-motion";
 
-import Papa from "papaparse";
+import Papa, { ParseResult } from "papaparse";
 
 import demoData from "../../data/demo.json";
+import { Data, Row } from "../../types/data";
 
 type Props = {
-  setter: any;
+  setter: React.Dispatch<React.SetStateAction<Data | null>>;
 };
 
-function distinct(value: any, index: number, self: any) {
+type JsonData = Row[];
+
+function distinct(
+  value: string | number,
+  index: number,
+  self: (string | number)[]
+) {
   return self.indexOf(value) === index;
 }
 
-function encrypt(value: any, values: any) {
+function encrypt(value: string | number, values: (string | number)[]) {
   return "X" + values.indexOf(value.toString());
 }
 
 const LoadData = ({ setter }: Props) => {
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState<File>();
   const [loading, setLoading] = useState(false);
 
   const useDemo = () => {
@@ -27,12 +34,16 @@ const LoadData = ({ setter }: Props) => {
     processData(demoData);
   };
 
-  const loadData = (e: any) => {
-    setFile(e.target.files[0]);
+  const loadData = (e: React.ChangeEvent<HTMLInputElement> | undefined) => {
+    if (e === undefined) return;
+    if (e.target.files === null) return;
+    if (e.target.files.length === 0) return;
+    const f = e.target.files[0];
+    setFile(f);
   };
 
   const processData = useCallback(
-    (d: any[]) => {
+    (d: JsonData) => {
       const keys = Object.keys(d[0]).map((key) => ({
         field: key,
         headerName: key,
@@ -45,7 +56,7 @@ const LoadData = ({ setter }: Props) => {
         .filter((k) => k.field !== "id")
         .map((k) => {
           const x = d.map((r) => r[k.field]);
-          return x.every((el: string | number) => {
+          return x.every((el) => {
             if (typeof el !== "string") return false;
             if (el === "NA") return true;
             return !isNaN(parseFloat(el));
@@ -73,7 +84,7 @@ const LoadData = ({ setter }: Props) => {
           hide: v.original === "id",
         })),
         data: d.map((r) => {
-          let rd: any = {};
+          let rd: Row = {};
           encArray.map((x) => {
             rd[x.encrypted] =
               x.original === "id"
@@ -93,14 +104,14 @@ const LoadData = ({ setter }: Props) => {
   );
 
   useEffect(() => {
-    if (file === "") return;
+    if (!file) return;
 
     setLoading(true);
 
     setTimeout(() => {
       Papa.parse(file, {
-        complete: function (results) {
-          const d = results.data.map((row: any, i) => {
+        complete: function (results: ParseResult<Row>) {
+          const d = results.data.map((row, i) => {
             return {
               id: i,
               ...row,
