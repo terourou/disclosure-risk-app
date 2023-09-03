@@ -14,11 +14,14 @@ import { BrowserRouter } from "react-router-dom";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <>
     <CssBaseline />
     <Rserve
-      {...{ host: process.env.REACT_APP_R_HOST || "ws://localhost:8111" }}
+      {...{
+        host: process.env.REACT_APP_R_HOST || "ws://localhost:8111",
+      }}
     >
       <BrowserRouter>
         <App />

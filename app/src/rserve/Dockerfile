@@ -13,6 +13,9 @@ RUN install2.r "$(cat dependencies.txt)"
 
 COPY . .
 
-EXPOSE 8081
+# get PORT from environment, default to 8081
+ARG PORT=8081
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
 CMD ["Rscript", "start.R"]

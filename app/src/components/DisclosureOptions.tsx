@@ -11,10 +11,16 @@ import {
 } from "@mui/material";
 import { Data } from "../types/data";
 
+export type Config = {
+  vars: string[];
+  encvars?: string[];
+  sfrac?: number;
+};
+
 type Props = {
   data: Data | null;
-  config: any;
-  handler: any;
+  config: Config;
+  handler: React.Dispatch<React.SetStateAction<Config>>;
 };
 
 const ITEM_HEIGHT = 48;
@@ -29,7 +35,9 @@ const MenuProps = {
 };
 
 const DisclosureOptions = ({ data, config, handler }: Props) => {
-  const handleVarChange = (event: SelectChangeEvent<string>) => {
+  const handleVarChange = (event: SelectChangeEvent<string[]>) => {
+    if (!data) return;
+
     const {
       target: { value },
     } = event;
@@ -38,8 +46,8 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
 
     // figure out encrypted vars:
     const encvars = newvars
-      .map((x) => data?.vars.map((x) => x.field).indexOf(x))
-      .map((i) => data?.encrypted?.vars[i || 0].field || i);
+      .map((x) => data.vars.map((x) => x.field).indexOf(x))
+      .map((i) => data.encrypted?.vars[i || 0].field || i.toString());
 
     handler({
       ...config,
@@ -48,17 +56,22 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
     });
   };
 
-  const handleFracChange = (event: any) => {
-    let {
+  const handleFracChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | undefined
+  ) => {
+    if (event === undefined) return;
+
+    const {
       target: { value },
     } = event;
 
-    if (!data) value = 1;
-    else if (value > 1) value = data.data.length / value;
+    let x = parseFloat(value);
+    if (!data) x = 1;
+    else if (x > 1) x = data.data.length / x;
 
     handler({
       ...config,
-      sfrac: value,
+      sfrac: x,
     });
   };
 
@@ -92,14 +105,14 @@ const DisclosureOptions = ({ data, config, handler }: Props) => {
               id="select-variables"
               multiple
               value={config.vars}
-              onChange={handleVarChange}
+              onChange={(e) => handleVarChange(e)}
               input={
                 <OutlinedInput
                   id="select-multiple-vars"
                   label="Choose variables"
                 />
               }
-              renderValue={(selected: any) => (
+              renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value: string) => (
                     <Chip key={"var-" + value} label={value} />

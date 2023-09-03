@@ -15,7 +15,7 @@
     "@tmelliott/react-rserve": "^0.1.2",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
-    "@types/papaparse": "^5.3.2",
+    "@types/papaparse": "^5.3.8",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@yelysei/react-files-drag-and-drop": "^1.0.0",
@@ -28,6 +28,7 @@
     "react": "^18.2.0",
     "react-boxplot": "^4.0.0",
     "react-dom": "^18.2.0",
+    "react-ga4": "^2.1.0",
     "react-gauge-chart": "^0.4.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
@@ -40,7 +41,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "cd src/rserve && sudo docker-compose up"
+    "server": "cd src/rserve && docker-compose up"
   },
   "eslintConfig": {
     "extends": [

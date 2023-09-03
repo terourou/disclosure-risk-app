@@ -12,7 +12,10 @@ type Props = {
 function ViewData({ data, clear }: Props) {
   const [display, setDisplay] = useState("raw");
 
-  const toggleDataView = (event: any) => {
+  const toggleDataView = (
+    event: React.ChangeEvent<HTMLInputElement> | undefined
+  ) => {
+    if (event === undefined) return;
     setDisplay(event.target.checked ? "enc" : "raw");
   };
 
