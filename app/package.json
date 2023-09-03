@@ -2,6 +2,7 @@
   "name": "app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://risk.terourou.org",
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
@@ -23,6 +24,7 @@
     "crypto-hash": "^2.0.1",
     "d3": "^7.5.0",
     "framer-motion": "^6.3.16",
+    "gh-pages": "^6.0.0",
     "papaparse": "^5.3.2",
     "postcss": "^8.4.14",
     "react": "^18.2.0",
@@ -41,7 +43,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "cd src/rserve && docker-compose up"
+    "server": "cd src/rserve && docker-compose up",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
