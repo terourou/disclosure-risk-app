@@ -1,5 +1,5 @@
 export type Config = {
   vars: string[];
-  encvars?: string[];
-  sfrac?: number;
+  encvars: string[];
+  sfrac: number;
 };

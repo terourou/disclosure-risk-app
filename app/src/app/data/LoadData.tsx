@@ -9,6 +9,8 @@ import { useCallback, useState } from "react";
 import { Accept, useDropzone } from "react-dropzone";
 import { Data, Row } from "~/types/Data";
 
+import demoData from "./demo.json";
+
 type SetData = React.Dispatch<React.SetStateAction<Data | undefined>>;
 
 const acceptedFileTypes: Accept = {
@@ -29,6 +31,11 @@ const encrypt = (value: string | number, values: (string | number)[]) => {
 
 export default function LoadData({ setData }: { setData: SetData }) {
   const [loading, setLoading] = useState(false);
+
+  const useDemo = () => {
+    setLoading(true);
+    processData(demoData);
+  };
 
   const processData = useCallback(
     (d: Row[]) => {
@@ -127,33 +134,40 @@ export default function LoadData({ setData }: { setData: SetData }) {
     });
 
   return (
-    <div className="relative flex w-full max-w-5xl flex-col gap-4 rounded border-dashed border-slate-100 bg-slate-600 p-8 text-center text-neutral-200">
-      <p className="font-bold uppercase">Upload Dataset to begin</p>
-      <div {...getRootProps()}>
-        <section
-          className={clsx(
-            "w-full cursor-pointer rounded border border-dashed border-slate-100 bg-gray-500 p-12 text-center ",
-            isDragReject && "border-red-300",
-            isDragAccept && "border-green-300",
-          )}
-        >
-          <input {...getInputProps()} />
-          <p className="">
-            Drag and drop file here to upload, or click to select a file.
-          </p>
-        </section>
-      </div>
-
-      <p className="text-sm">Supported file types: CSV</p>
-
-      {loading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded bg-slate-800 bg-opacity-50 backdrop-blur">
-          <p className="">
-            <ArrowDownTrayIcon className="h-16 animate-pulse" />
-          </p>
-          <p>Loading data into browser</p>
+    <div className="flex w-full flex-col items-center justify-center gap-4">
+      <div className="relative flex w-full max-w-5xl flex-col gap-4 rounded border-dashed border-slate-100 bg-slate-600 p-8 text-center text-neutral-200">
+        <p className="font-bold uppercase">Upload Dataset to begin</p>
+        <div {...getRootProps()}>
+          <section
+            className={clsx(
+              "w-full cursor-pointer rounded border border-dashed border-slate-100 bg-gray-500 p-12 text-center ",
+              isDragReject && "border-red-300",
+              isDragAccept && "border-green-300",
+            )}
+          >
+            <input {...getInputProps()} />
+            <p className="">
+              Drag and drop file here to upload, or click to select a file.
+            </p>
+          </section>
         </div>
-      )}
+
+        <p className="text-sm">Supported file types: CSV</p>
+
+        {loading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded bg-slate-800 bg-opacity-50 backdrop-blur">
+            <p className="">
+              <ArrowDownTrayIcon className="h-16 animate-pulse" />
+            </p>
+            <p>Loading data into browser</p>
+          </div>
+        )}
+      </div>
+      <div className="flex w-full max-w-5xl justify-end px-2">
+        <button className="text-right text-xs uppercase" onClick={useDemo}>
+          Load a demo dataset
+        </button>
+      </div>
     </div>
   );
 }
