@@ -9,12 +9,17 @@
     "start": "next start"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.18",
+    "@mui/x-data-grid": "^6.12.1",
     "@t3-oss/env-nextjs": "^0.6.0",
     "@tmelliott/react-rserve": "^0.1.2",
+    "@types/papaparse": "^5.3.8",
     "clsx": "^2.0.0",
     "next": "^13.4.13",
+    "papaparse": "^5.4.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Link from "next/link";
+import Calculator from "./Calculator";
 
 export default function Page() {
   return (
@@ -13,7 +13,9 @@ export default function Page() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="flex flex-col items-center justify-center">Page</main>
+      <main className="flex flex-col items-center justify-center">
+        <Calculator />
+      </main>
     </>
   );
 }

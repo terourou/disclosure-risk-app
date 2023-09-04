@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import Logo from "../../public/logo.png";
+import Image from "next/image";
+
 const Header = () => {
   return (
     <nav className="bg-grey-darkest flex flex-wrap items-center justify-between bg-gradient-to-br from-gray-800 to-gray-700 p-4 text-white">
@@ -7,7 +10,7 @@ const Header = () => {
         <Link href="/">
           <div className="flex items-center gap-4 pl-2 text-xl font-bold">
             <div className="h-14 rounded-full bg-white p-3">
-              <img src="/logo.png" className="h-full" alt="Logo" />
+              <Image src={Logo} className="h-full w-auto" alt="Logo" />
             </div>
             <div className="flex flex-col">
               <span>Disclosure Risk</span>
