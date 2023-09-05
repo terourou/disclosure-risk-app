@@ -4,9 +4,11 @@ export type Row = {
   [key: string]: string | number;
 };
 
-export type Data = {
+type RawData = {
   vars: GridColDef[];
   data: Row[];
   types: string[];
-  encrypted?: Data;
+};
+export type Data = RawData & {
+  encrypted: RawData;
 };

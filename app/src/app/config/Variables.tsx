@@ -10,6 +10,15 @@ export default function Variables({
   config: Config;
   setConfig: React.Dispatch<React.SetStateAction<Config>>;
 }) {
+  const set = (vars: string[]) =>
+    setConfig((c) => ({
+      ...c,
+      vars,
+      encvars: vars
+        .map((x) => data.vars.map((x) => x.field).indexOf(x))
+        .map((i) => data.encrypted.vars[i || 0]?.field || i.toString()),
+    }));
+
   return (
     <>
       <h5 className="font-bold">Select possible identification variables</h5>
@@ -27,12 +36,11 @@ export default function Variables({
                 checked={config.vars.includes(v.field)}
                 className="peer hidden"
                 onChange={(e) =>
-                  setConfig((c) => ({
-                    ...c,
-                    vars: e.target.checked
-                      ? [...c.vars, v.field]
-                      : c.vars.filter((x) => x !== v.field),
-                  }))
+                  set(
+                    e.target.checked
+                      ? [...config.vars, v.field]
+                      : config.vars.filter((x) => x !== v.field),
+                  )
                 }
               />
               <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-500 shadow hover:cursor-pointer peer-checked:bg-blue-200 peer-checked:text-black">

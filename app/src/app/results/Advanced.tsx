@@ -6,6 +6,11 @@ import { Data, Row } from "~/types/Data";
 import { useRserve } from "@tmelliott/react-rserve";
 import { useEffect, useState } from "react";
 import { DisRiskFuns, DisRiskResult } from "~/types/DisRisk";
+import { AnimatePresence, motion } from "framer-motion";
+import Boxplot, { computeBoxplotStats } from "react-boxplot";
+
+import { interpolateHsl } from "d3";
+import { DataGrid } from "@mui/x-data-grid";
 
 export default function AdvancedResults({
   data,
@@ -111,7 +116,11 @@ export default function AdvancedResults({
 
   if (funs.calculate_risks) {
     return (
-      <DisplayResults calculate_risks={funs.calculate_risks} config={config} />
+      <DisplayResults
+        calculate_risks={funs.calculate_risks}
+        data={data}
+        config={config}
+      />
     );
   }
 
@@ -206,13 +215,16 @@ function chunkArray(x: Row[], s: number) {
 
 function DisplayResults({
   calculate_risks,
+  data,
   config,
 }: {
   calculate_risks: DisRiskFuns["calculate_risks"];
+  data: Data;
   config: Config;
 }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DisRiskResult>();
+
   useEffect(() => {
     if (!calculate_risks) return;
 
@@ -220,7 +232,7 @@ function DisplayResults({
     calculate_risks(
       {
         sfrac: config.sfrac,
-        vars: config.vars,
+        vars: config.encvars,
       },
       (err, value) => {
         if (err) console.error(err);
@@ -236,8 +248,137 @@ function DisplayResults({
     );
   }, [config, calculate_risks]);
 
-  if (!result) return <></>;
-  if (loading) return <>Loading...</>;
+  if (!result) return loading ? <>Loading...</> : <></>;
 
-  return <>RESULTS</>;
+  return (
+    <div className="mx-auto mt-8 flex w-full max-w-6xl gap-12 border-t px-8 pt-8">
+      <div className="flex-1">
+        <VariableResults contributions={result.var_contrib} />
+      </div>
+      <div className="flex-1">
+        <RowResults data={data} config={config} risks={result.indiv_risk} />
+      </div>
+    </div>
+  );
 }
+
+const VariableResults = ({
+  contributions,
+}: {
+  contributions: DisRiskResult["var_contrib"];
+}) => {
+  return (
+    <div className="flex flex-col">
+      <div className="table">
+        <div className="table-row">
+          <div className="table-cell border-r border-r-white pr-2 text-right align-middle"></div>
+          <div className="table-cell h-full w-full py-1 pr-2 font-bold">
+            Variable contributions to overall risk
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {contributions
+            .sort((x1, x2) => (x1.c < x2.c ? 1 : -1))
+            .map(({ v, c }) => (
+              <motion.div
+                key={v}
+                className="table-row h-[18px]"
+                initial={{ opacity: 0, transform: "scaleY(0)" }}
+                animate={{ opacity: 1, transform: "scaleY(1)" }}
+                exit={{ opacity: 0, transform: "scaleY(0)" }}
+              >
+                <div className="table-cell border-r border-r-white pr-2 text-right align-middle">
+                  {v}
+                </div>
+                <div className="table-cell h-full w-full py-1 pr-2">
+                  <div
+                    className="linear h-full transition-all duration-1000"
+                    style={{
+                      width: c + "%",
+                      background: barCol(c / 100),
+                    }}
+                  ></div>
+                </div>
+                <div className="align-center table-cell align-middle">
+                  {Math.round(c * 10) / 10}%
+                </div>
+              </motion.div>
+            ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+const barCol = interpolateHsl("#18c618", "#cd2020");
+
+const RowResults = ({
+  data,
+  config,
+  risks,
+}: {
+  data: Data;
+  config: Config;
+  risks: DisRiskResult["indiv_risk"];
+}) => {
+  const cols = [
+    {
+      field: "row",
+      headerName: "Row Number",
+      type: "number",
+      hide: false,
+    },
+    {
+      field: "risk",
+      headerName: "Risk (%)",
+      type: "number",
+      hide: false,
+    },
+    ...data.vars.filter((x) => config.vars.indexOf(x.field) !== -1),
+  ];
+
+  const rows = data.data.map((x, i) => ({
+    ...x,
+    row: i + 1,
+    risk: Math.round((risks[i] || 0) * 1000) / 10,
+  }));
+
+  return (
+    <div className="flex flex-col gap-8">
+      <h5 className="font-bold">Row/observation risks</h5>
+
+      <div className="relative mx-auto my-1 w-[400px] pb-1">
+        <Boxplot
+          width={400}
+          height={20}
+          orientation="horizontal"
+          min={0}
+          max={100}
+          stats={computeBoxplotStats(risks.map((x: number) => x * 100))}
+        />
+
+        {[0, 20, 40, 60, 80, 100].map((x) => (
+          <div
+            className="b-0 absolute h-[10px] border-l border-l-black"
+            style={{ left: x + "%" }}
+            key={"percent-" + x}
+          >
+            <div className="b-0 absolute translate-x-[-50%] translate-y-[10px] text-xs">
+              {x}%
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-2 h-[300px] bg-slate-50 drop-shadow">
+        <DataGrid
+          rows={rows}
+          columns={cols}
+          density="compact"
+          sortModel={[{ field: "risk", sort: "desc" }]}
+        />
+      </div>
+    </div>
+  );
+};
