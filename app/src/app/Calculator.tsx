@@ -10,6 +10,7 @@ import Variables from "./config/Variables";
 import Guide from "~/Guide";
 import BasicResults from "./results/Basic";
 import { Config } from "~/types/Config";
+import AdvancedResults from "./results/Advanced";
 
 export default function Calculator() {
   const [data, setData] = useState<Data>();
@@ -42,7 +43,10 @@ export default function Calculator() {
       {!data || (config.vars.length === 0 && <Guide data={data} />)}
 
       {data && config.vars.length > 0 && (
-        <BasicResults data={data} config={config} />
+        <>
+          <BasicResults data={data} config={config} />
+          <AdvancedResults data={data} config={config} />
+        </>
       )}
     </div>
   );

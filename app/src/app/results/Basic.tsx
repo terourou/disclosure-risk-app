@@ -24,7 +24,7 @@ export default function BasicResults({
       </div>
       <div className="flex flex-col items-center">
         <p className="uppercase">Estimated disclosure risk</p>
-        <p className="text-6xl font-bold">{round(risk, 2)}%</p>
+        <p className="text-6xl font-bold">{round(risk, 1)}%</p>
       </div>
     </div>
   );
