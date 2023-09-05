@@ -17,7 +17,7 @@ export default function Variables({
         These might be used alone or in combination with others to identify
         individuals.
       </p>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="my-2 flex flex-wrap items-center gap-2">
         {data.vars
           .filter((v) => v.field !== "id")
           .map((v) => (
@@ -25,6 +25,7 @@ export default function Variables({
               <input
                 type="checkbox"
                 checked={config.vars.includes(v.field)}
+                className="peer hidden"
                 onChange={(e) =>
                   setConfig((c) => ({
                     ...c,
@@ -34,7 +35,9 @@ export default function Variables({
                   }))
                 }
               />
-              <span>{v.field}</span>
+              <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-500 shadow hover:cursor-pointer peer-checked:bg-blue-200 peer-checked:text-black">
+                {v.field}
+              </span>
             </label>
           ))}
       </div>
