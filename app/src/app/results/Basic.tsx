@@ -16,7 +16,7 @@ export default function BasicResults({
   const risk = disRisk(config.sfrac, uniques, pairs) * 100;
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl items-center justify-center gap-20">
+    <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-center gap-20 lg:flex-row">
       <div className="flex items-center justify-center gap-12 border-r pr-16">
         <Stat value={config.vars.length} label="Variables" />
         <Stat value={uniques} label="Unique values" />
@@ -30,4 +30,5 @@ export default function BasicResults({
   );
 }
 
-const round = (n: number, dp: number) => Math.round(n * 10 ** dp) / 10 ** dp;
+export const round = (n: number, dp: number) =>
+  Math.round(n * 10 ** dp) / 10 ** dp;

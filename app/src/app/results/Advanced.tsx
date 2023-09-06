@@ -11,6 +11,7 @@ import Boxplot, { computeBoxplotStats } from "react-boxplot";
 
 import { interpolateHsl } from "d3";
 import { DataGrid } from "@mui/x-data-grid";
+import { round } from "./Basic";
 
 export default function AdvancedResults({
   data,
@@ -76,20 +77,14 @@ export default function AdvancedResults({
   const [loadingProgress, setLoadingProgress] = useState<number>();
   const [error, setError] = useState<string>();
 
-  if (!R) {
-    return <p>Connecting to R...</p>;
-  }
-
-  if (!R.running) {
-    return <p>Starting R...</p>;
-  }
+  if (!R || !R.running) return <></>;
 
   if (loadingProgress !== undefined) {
     return (
-      <div className="flex flex-col items-center">
+      <div className="mx-auto my-20 flex w-full max-w-4xl flex-col items-center gap-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="animate-rise h-10 w-10"
+          className="h-10 w-10 animate-pulse"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -102,12 +97,14 @@ export default function AdvancedResults({
           />
         </svg>
 
-        <div className="h-1 w-full bg-gray-300">
+        <p className="text-slate-700">Uploading data ...</p>
+
+        <div className="h-4 w-full rounded-full bg-gray-300">
           <div
             style={{
               width: `${(100 * (loadingProgress + 1)) / data.data.length}%`,
             }}
-            className={`h-full bg-green-600 transition-all`}
+            className={`h-full rounded-full bg-green-600 transition-all`}
           ></div>
         </div>
       </div>
@@ -248,10 +245,17 @@ function DisplayResults({
     );
   }, [config, calculate_risks]);
 
-  if (!result) return loading ? <>Loading...</> : <></>;
+  if (!result)
+    return loading ? (
+      <div className="my-12 flex flex-col items-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-8 border-gray-200 border-t-blue-700"></div>
+      </div>
+    ) : (
+      <></>
+    );
 
   return (
-    <div className="mx-auto mt-8 flex w-full max-w-6xl gap-12 border-t px-8 pt-8">
+    <div className="mx-auto mt-8 flex w-full max-w-6xl flex-col gap-12 border-t px-8 pt-8 lg:flex-row">
       <div className="flex-1">
         <VariableResults contributions={result.var_contrib} />
       </div>
@@ -301,7 +305,7 @@ const VariableResults = ({
                   ></div>
                 </div>
                 <div className="align-center table-cell align-middle">
-                  {Math.round(c * 10) / 10}%
+                  {round(c, 1)}%
                 </div>
               </motion.div>
             ))}
@@ -341,34 +345,36 @@ const RowResults = ({
   const rows = data.data.map((x, i) => ({
     ...x,
     row: i + 1,
-    risk: Math.round((risks[i] || 0) * 1000) / 10,
+    risk: round((risks[i] || 0) * 100, 1),
   }));
 
   return (
     <div className="flex flex-col gap-8">
       <h5 className="font-bold">Row/observation risks</h5>
 
-      <div className="relative mx-auto my-1 w-[400px] pb-1">
-        <Boxplot
-          width={400}
-          height={20}
-          orientation="horizontal"
-          min={0}
-          max={100}
-          stats={computeBoxplotStats(risks.map((x: number) => x * 100))}
-        />
+      <div className="w-full px-8">
+        <div className="relative mx-auto my-1 w-full pb-1">
+          <Boxplot
+            width={400}
+            height={20}
+            orientation="horizontal"
+            min={0}
+            max={100}
+            stats={computeBoxplotStats(risks.map((x: number) => x * 100))}
+          />
 
-        {[0, 20, 40, 60, 80, 100].map((x) => (
-          <div
-            className="b-0 absolute h-[10px] border-l border-l-black"
-            style={{ left: x + "%" }}
-            key={"percent-" + x}
-          >
-            <div className="b-0 absolute translate-x-[-50%] translate-y-[10px] text-xs">
-              {x}%
+          {[0, 20, 40, 60, 80, 100].map((x) => (
+            <div
+              className="b-0 absolute h-[10px] border-l border-l-black"
+              style={{ left: x + "%" }}
+              key={"percent-" + x}
+            >
+              <div className="b-0 absolute translate-x-[-50%] translate-y-[10px] text-xs">
+                {x}%
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       <div className="mt-2 h-[300px] bg-slate-50 drop-shadow">
