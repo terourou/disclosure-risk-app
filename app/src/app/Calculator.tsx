@@ -40,7 +40,7 @@ export default function Calculator() {
         </div>
       )}
 
-      {!data || (config.vars.length === 0 && <Guide data={data} />)}
+      {(!data || config.vars.length === 0) && <Guide data={data} />}
 
       {data && config.vars.length > 0 && (
         <>
