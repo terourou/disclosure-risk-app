@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Config } from "~/types/Config";
 import type { Data } from "~/types/Data";
 
@@ -10,6 +11,11 @@ export default function PopSize({
   config: Config;
   setConfig: React.Dispatch<React.SetStateAction<Config>>;
 }) {
+  const [sliderValue, setSliderValue] = useState<number>(config.sfrac * 100);
+  const [sliderInterval, setSliderInterval] = useState<
+    NodeJS.Timeout | undefined
+  >(undefined);
+
   return (
     <>
       <h5 className="font-bold">Specify population sampling fraction</h5>
@@ -24,18 +30,23 @@ export default function PopSize({
           min={1}
           max={100}
           step={1}
-          value={config.sfrac * 100}
+          value={sliderValue}
           className="flex-1"
-          onChange={(e) =>
-            setConfig((c) => ({
-              ...c,
-              sfrac: parseInt(e.target.value) / 100,
-            }))
-          }
+          onChange={(e) => {
+            setSliderValue(parseInt(e.target.value));
+            if (sliderInterval !== undefined) {
+              clearTimeout(sliderInterval);
+            }
+            const id = setTimeout(() => {
+              setConfig((c) => ({
+                ...c,
+                sfrac: sliderValue / 100,
+              }));
+            }, 100);
+            setSliderInterval(id);
+          }}
         />
-        <div className="text-3xl font-bold">
-          {Math.round(config.sfrac * 100)}%
-        </div>
+        <div className="text-3xl font-bold">{Math.round(sliderValue)}%</div>
       </div>
 
       <div className="flex gap-8 px-8">
