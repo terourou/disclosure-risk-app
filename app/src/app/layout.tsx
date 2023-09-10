@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <Rserve
           {...{
-            host: process.env.NEXT_PUBLIC_R_HOST || "ws://localhost:8111",
+            host: process.env.NEXT_PUBLIC_R_HOST ?? "ws://localhost:8111",
           }}
         >
           <div className="App flex min-h-screen flex-col justify-center gap-1">

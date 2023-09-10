@@ -1,4 +1,4 @@
-import { Data } from "./types/Data";
+import type { Data } from "./types/Data";
 import clsx from "clsx";
 
 export default function Guide({ data }: { data?: Data }) {

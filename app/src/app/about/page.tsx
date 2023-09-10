@@ -1,6 +1,6 @@
 export default function Page() {
   return (
-    <div className="prose prose-slate container mx-auto pb-20">
+    <div className="container prose prose-slate mx-auto pb-20">
       <p className="lead">
         Our <em>Disclosure Risk Calculator</em> allows anyone to quickly and
         easily explore disclosure risks in a dataset. The data is stored in your
@@ -49,11 +49,11 @@ export default function Page() {
       <h4>Uploading data for extra details</h4>
 
       <p>
-        If you choose to upload your data to the server by clicking the 'Upload'
-        button, the encrypted version of the data (in which values are replaced
-        by random labels) is uploaded to a secure process that only your current
-        connection can access. It then makes use of functions from the
-        'sdcMicro' R package to calculate:
+        If you choose to upload your data to the server by clicking the
+        &lsquo;Upload&rsquo; button, the encrypted version of the data (in which
+        values are replaced by random labels) is uploaded to a secure process
+        that only your current connection can access. It then makes use of
+        functions from the &lsquo;sdcMicro&rsquo; R package to calculate:
       </p>
 
       <ul>
@@ -92,12 +92,12 @@ export default function Page() {
       </p>
 
       <p>
-        Once the connection is made and the user clicks the 'Upload' button, the
-        encrypted version of the data is sent to the R process and stored{" "}
-        <em>in memory</em> as an R dataframe. The process then returns a
+        Once the connection is made and the user clicks the &lsquo;Upload&rsquo;
+        button, the encrypted version of the data is sent to the R process and
+        stored <em>in memory</em> as an R dataframe. The process then returns a
         function (<code>calculate_risk()</code>) which can be called by your app
         session (and only yours) to estimate the risk information. This function
-        is scoped, so the data is availble to it but doesn't need to be
+        is scoped, so the data is availble to it but doesn&apos;t need to be
         re-uploaded each time.
       </p>
 

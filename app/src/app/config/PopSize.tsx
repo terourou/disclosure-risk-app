@@ -1,5 +1,5 @@
-import { Config } from "~/types/Config";
-import { Data } from "~/types/Data";
+import type { Config } from "~/types/Config";
+import type { Data } from "~/types/Data";
 
 export default function PopSize({
   data,

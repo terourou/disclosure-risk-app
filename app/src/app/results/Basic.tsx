@@ -1,6 +1,6 @@
-import { Data } from "~/types/Data";
+import type { Data } from "~/types/Data";
+import type { Config } from "~/types/Config";
 import Stat from "../Stat";
-import { Config } from "~/types/Config";
 import { calculate_matches, disRisk } from "./DisRisk";
 
 export default function BasicResults({

@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 
-import { Data } from "~/types/Data";
+import type { Data } from "~/types/Data";
+import type { Config } from "~/types/Config";
 import LoadData from "./data/LoadData";
 import ViewData from "./data/ViewData";
 import PopSize from "./config/PopSize";
 import Variables from "./config/Variables";
 import Guide from "~/Guide";
 import BasicResults from "./results/Basic";
-import { Config } from "~/types/Config";
 import AdvancedResults from "./results/Advanced";
 
 export default function Calculator() {
@@ -26,7 +26,7 @@ export default function Calculator() {
         <LoadData setData={setData} />
       ) : (
         <div className="flex w-full flex-col rounded lg:flex-row">
-          <div className="h-96 bg-gray-50 p-4 lg:w-1/2 xl:w-1/3">
+          <div className="bg-gray-50 p-4 lg:w-1/2 xl:w-1/3">
             <ViewData data={data} clear={() => setData(undefined)} />
           </div>
           <div className="flex flex-1 flex-col items-center xl:flex-row">

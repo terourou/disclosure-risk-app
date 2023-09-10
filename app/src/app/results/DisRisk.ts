@@ -29,14 +29,14 @@ export function calculate_matches(data: (string | number)[][]): {
 } {
   const values = data.map((row) => Object.values(row).join("|"));
   const table = values.reduce(
-    (acc, e: string) => acc.set(e, (acc.get(e) || 0) + 1),
+    (acc, e: string) => acc.set(e, (acc.get(e) ?? 0) + 1),
     new Map<string, number>(),
   );
 
   let uniques = 0,
     pairs = 0;
 
-  const tarr = Array.from(table, ([name, value]) => value);
+  const tarr = Array.from(table, ([, value]) => value);
 
   tarr.map((x: number) => {
     if (x === 1) uniques++;

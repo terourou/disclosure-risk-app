@@ -1,11 +1,11 @@
 "use client";
 
-import { Config } from "~/types/Config";
-import { Data, Row } from "~/types/Data";
+import type { Config } from "~/types/Config";
+import type { Data, Row } from "~/types/Data";
+import type { DisRiskFuns, DisRiskResult } from "~/types/DisRisk";
 
 import { useRserve } from "@tmelliott/react-rserve";
 import { useEffect, useState } from "react";
-import { DisRiskFuns, DisRiskResult } from "~/types/DisRisk";
 import { AnimatePresence, motion } from "framer-motion";
 import Boxplot, { computeBoxplotStats } from "react-boxplot";
 
@@ -30,14 +30,18 @@ export default function AdvancedResults({
   const uploadData = () => {
     R.ocap(
       async (
-        err: any,
+        err: string | undefined,
         funs: {
           upload_data?: (
             rows: Row[] | undefined,
-            callback: (err: any, value: DisRiskFuns | undefined) => void,
+            callback: (
+              err: string | undefined,
+              value: DisRiskFuns | undefined,
+            ) => void,
           ) => void;
         },
       ) => {
+        if (err) return;
         if (!data || !data.encrypted || !funs.upload_data) return;
         setLoadingProgress(0);
 
@@ -51,7 +55,7 @@ export default function AdvancedResults({
           });
         }
 
-        let chunkSize = Math.min(
+        const chunkSize = Math.min(
           100,
           Math.max(1, Math.round(5000 / data.vars.length)),
         );
@@ -77,7 +81,8 @@ export default function AdvancedResults({
   const [loadingProgress, setLoadingProgress] = useState<number>();
   const [error, setError] = useState<string>();
 
-  if (!R || !R.running) return <></>;
+  if (!R?.running) return <></>;
+  if (error) return <div className="text-red-600">{error}</div>;
 
   if (loadingProgress !== undefined) {
     return (
@@ -166,10 +171,10 @@ export default function AdvancedResults({
               </ul>
               <p>
                 This information requires the use of methods in the R package
-                'sdcMicro', and so cannot be performed locally. We will load
-                your data into memory on our server where it will be accessible
-                only from the current connection. Once you close this page, the
-                session and any uploaded data will be deleted.
+                &lsquo;sdcMicro&rsquo;, and so cannot be performed locally. We
+                will load your data into memory on our server where it will be
+                accessible only from the current connection. Once you close this
+                page, the session and any uploaded data will be deleted.
               </p>
 
               <h4 className="mt-2 text-lg">Encryption of values</h4>
@@ -237,7 +242,7 @@ function DisplayResults({
           ...value,
           var_contrib: value.var_contrib.map((x, i) => ({
             ...x,
-            v: config.vars[i] as string,
+            v: config.vars[i]!,
           })),
         });
         setLoading(false);
@@ -342,10 +347,13 @@ const RowResults = ({
     ...data.vars.filter((x) => config.vars.indexOf(x.field) !== -1),
   ];
 
+  // TODO: fixed array size?!
+  // type Tuple<TItem, TLength extends number> = [TItem, ...TItem[]] & { length: TLength };
+
   const rows = data.data.map((x, i) => ({
     ...x,
     row: i + 1,
-    risk: round((risks[i] || 0) * 100, 1),
+    risk: round((risks[i] ?? 0) * 100, 1),
   }));
 
   return (

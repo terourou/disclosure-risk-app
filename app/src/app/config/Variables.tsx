@@ -1,5 +1,5 @@
-import { Config } from "~/types/Config";
-import { Data } from "~/types/Data";
+import type { Config } from "~/types/Config";
+import type { Data } from "~/types/Data";
 
 export default function Variables({
   data,
@@ -16,7 +16,7 @@ export default function Variables({
       vars,
       encvars: vars
         .map((x) => data.vars.map((x) => x.field).indexOf(x))
-        .map((i) => data.encrypted.vars[i || 0]?.field || i.toString()),
+        .map((i) => data.encrypted.vars[i ?? 0]?.field ?? i.toString()),
     }));
 
   return (

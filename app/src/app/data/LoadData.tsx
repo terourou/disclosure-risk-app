@@ -2,12 +2,12 @@
 
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 
-import Papa, { ParseResult } from "papaparse";
+import Papa, { type ParseResult } from "papaparse";
 
 import { clsx } from "clsx";
 import { useCallback, useState } from "react";
-import { Accept, useDropzone } from "react-dropzone";
-import { Data, Row } from "~/types/Data";
+import { type Accept, useDropzone } from "react-dropzone";
+import type { Data, Row } from "~/types/Data";
 
 import demoData from "./demo.json";
 
@@ -70,7 +70,7 @@ export default function LoadData({ setData }: { setData: SetData }) {
         original: v.field,
         encrypted: v.field === "id" ? v.field : "v" + i,
         values: d
-          .map((x) => x[v.field] as string | number)
+          .map((x) => x[v.field]!)
           .filter(distinct)
           .map((x) => x.toString()),
       }));
@@ -84,12 +84,12 @@ export default function LoadData({ setData }: { setData: SetData }) {
           hide: v.original === "id",
         })),
         data: d.map((r) => {
-          let rd: Row = {};
+          const rd: Row = {};
           encArray.map((x) => {
             rd[x.encrypted] =
               x.original === "id"
                 ? (r[x.original] as number)
-                : encrypt(r[x.original] as string | number, x.values);
+                : encrypt(r[x.original]!, x.values);
             return 0;
           });
           return rd;

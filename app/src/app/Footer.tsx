@@ -3,12 +3,11 @@
 import { useRserve } from "@tmelliott/react-rserve";
 
 import Rlogo from "./Rlogo.svg";
-// const Rlogo = "/Rlogo.svg";
 import Image from "next/image";
-import clsx from "clsx";
 
 const Footer = () => {
-  const { R, connecting } = useRserve();
+  // specify types for this
+  const { R, connecting } = useRserve(); // TODO: fix types for useRserve
 
   return (
     <footer className="bg-grey-darkest flex flex-wrap items-center justify-between bg-gradient-to-br from-gray-700 to-gray-800 p-4 text-white">
@@ -61,7 +60,7 @@ const Footer = () => {
           <div className="flex flex-col justify-center text-center">
             {/* message */}
             <div className="text-slate-300">
-              {R && R.running
+              {R?.running
                 ? "Connected"
                 : connecting
                 ? "Connecting ..."
@@ -70,7 +69,7 @@ const Footer = () => {
 
             {/* url */}
             <div>
-              {process.env.NEXT_PUBLIC_R_HOST?.replace(/^wss?:\/\//, "") ||
+              {process.env.NEXT_PUBLIC_R_HOST?.replace(/^wss?:\/\//, "") ??
                 "localhost"}
             </div>
           </div>
