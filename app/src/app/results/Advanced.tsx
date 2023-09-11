@@ -28,7 +28,7 @@ export default function AdvancedResults({
   const closeInfo = () => setInfoOpen(false);
 
   const uploadData = () => {
-    R.ocap(
+    R?.ocap(
       async (
         err: string | undefined,
         funs: {
@@ -59,7 +59,8 @@ export default function AdvancedResults({
           100,
           Math.max(1, Math.round(5000 / data.vars.length)),
         );
-        const chunks = chunkArray(data.encrypted.data, chunkSize);
+        const d = data.encrypted.data;
+        const chunks = chunkArray(d, chunkSize);
         const ULproms = chunks.map(async (rows, i) => {
           await uploadDataPromise(rows).then(() => {
             if (i === chunks.length - 1 || i % 10 === 0)
@@ -208,6 +209,7 @@ export default function AdvancedResults({
 
 function chunkArray(x: Row[], s: number) {
   const y = [];
+  console.log(x);
   while (x.length > 0) {
     const chunk = x.splice(0, s);
     y.push(chunk);

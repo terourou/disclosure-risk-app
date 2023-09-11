@@ -8,7 +8,7 @@ import LoadData from "./data/LoadData";
 import ViewData from "./data/ViewData";
 import PopSize from "./config/PopSize";
 import Variables from "./config/Variables";
-import Guide from "~/Guide";
+import Guide from "./Guide";
 import BasicResults from "./results/Basic";
 import AdvancedResults from "./results/Advanced";
 
